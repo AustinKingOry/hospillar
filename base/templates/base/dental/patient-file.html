@@ -1,0 +1,111 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/cash-pat-file-style.css' %}">
+</head>
+<div class="main-body">
+    <div class="patient-data-container">
+        <div class="basic-bio-data">            
+            <div class="sect">
+                <div class="field">
+                    <label for="id_patient">Name:</label>
+                    <input type="text" name="patient" id="id_patient" placeholder="Patient Name" value="{{patientlog}}" readonly class="inp-field">
+                </div>
+                <div class="field">
+                    <label for="id_gender">Gender:</label>
+                    <input type="text" name="gender" id="id_gender" placeholder="Gender" value="{{patientlog.patient.gender}}" readonly class="inp-field">
+                </div>
+                <div class="field">
+                    <label for="id_patient_age">Age:</label>
+                    <input type="number" name="patient_age" id="id_patient_age" placeholder="Age" value="{{patientlog.patient.date_of_birth|age}}" readonly class="inp-field">
+                </div>
+                <div class="field">
+                    <label for="id_patlog_id">File No:</label>
+                    <input type="text" name="patient" id="id_patlog_id" placeholder="File Bumber" value="{{patientlog.patlog_id}}" readonly class="inp-field">
+                </div>
+            </div>
+            <div class="sect">
+                <div class="field">
+                    <label for="id_visit_number">Visit Number:</label>
+                    <input type="number" name="visit_number" id="id_visit_number" placeholder="Visit Number" value="{{patientlog.id}}" readonly class="inp-field">
+                </div>
+                <div class="field">
+                    <label for="id_op_number">O/B Number:</label>
+                    <input type="text" name="op_number" id="id_op_number" placeholder="ADM Number" value="{{patientlog.patient.op_number}}" readonly class="inp-field">
+                </div>
+                <div class="field">
+                    <label for="id_payer">Payer Scheme:</label>
+                    <input type="text" name="payer" id="id_payer" placeholder="Payer" value="{{patientlog.payment_mode}}" readonly class="inp-field">
+                </div>
+            </div>            
+        </div>
+        <div class="d-flex flex-wrap gap-3">
+            <div class="field">
+                {% if patientlog.active_status and patientlog.created_today %}
+                <button type="button" class="btn btn-primary" id="prc_{{patientlog.id}}" url="{% url 'edit-prc' patientlog.id %}" onclick="openMiniWindow('prc_{{patientlog.id}}');">Drugs & Prescriptions</button>
+                {% endif %}
+            </div>
+            <div class="field">
+                {% if patientlog.active_status and patientlog.created_today %}
+                <button type="button" class="btn btn-primary" id="ser_{{patientlog.id}}" url="{% url 'edit-services' patientlog.id %}" onclick="openMiniWindow('ser_{{patientlog.id}}');">Services & Procedures</button>
+                {% endif %}
+            </div>
+        </div>        
+        <div class="record-listing-wrapper no-borr charges-listing-wrapper">
+            <div class="listing-cont">
+                <table id="main-table-mini" class="listing-data-cont">
+                    <thead>
+                        <tr class="info-title-wrapper">
+                            <th class="columnHeader sort-control bi-sort-up"> Item</th>
+                            <th class="columnHeader sort-control bi-sort-up"> Quantity</th>
+                            <th class="columnHeader sort-control bi-sort-up"> Price</th>
+                            <th class="columnHeader sort-control bi-sort-up"> Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in procedures %}
+                        <tr class="row-items-wrapper">
+                            <td class="row-item">{{item}}</td>
+                            <td class="row-item">{{item.quantity}}</td>
+                            <td class="row-item">{{item.price}}</td>
+                            <td class="row-item">{{item.total_amount}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>                   
+                </table>
+                <div class="form-container">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="data-division">                
+                            <div class="field">
+                                <label for="id_test_results">Findings & Results:</label>
+                                <textarea name="test_results" cols="40" rows="10" required id="id_test_results" class="input-field long-input-field">{{patientlog.test_results}}</textarea>
+                                <p class="text-muted help-text">Add Your Notes To The existing notes from other departments.</p>
+                            </div>
+                        </div>
+                        {% if patientlog.active_status %}
+                        <div class="select-field">
+                            <label for="id_current_stage">Send To:</label>
+                            <select name="current_stage" id="id_current_stage" class="input-field form-select form-select-lg mb-3" required>
+                                <option value="">--Select--</option>
+                                {% for dpt in departments %}
+                                <option value="{{dpt.id}}">{{dpt}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="field submit-field">
+                            <input type="submit" class="btn btn-primary" value="Send">
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% include 'table-scripts.html' %}
+{% endblock content %}

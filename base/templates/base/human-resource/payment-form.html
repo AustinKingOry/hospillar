@@ -1,0 +1,91 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+
+<div class="container">
+    <!-- <h3>New Payment</h3> -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                  <h1>New Payment</h1>
+                </div>
+                <!-- <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">General Form</li>
+                    </ol>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h3 class="card-title">Fill In These Fields:</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <div class="form-row">                      
+                                <div class="form-group col-md-4">
+                                    <label for="id_employee">Employee:</label>
+                                    <select name="employee" class="form-control" required id="id_employee">
+                                        {% for opt in form.employee %}
+                                        {{ opt }}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="id_from_date">From date:</label>
+                                    <input type="date" name="from_date" class="form-control" required id="id_from_date">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="id_to_date">To date:</label>
+                                    <input type="date" name="to_date" class="form-control" required id="id_to_date">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="id_amount_payable">Amount payable:</label>
+                                    <input type="number" name="amount_payable" value="0" class="form-control" required id="id_amount_payable">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="id_mode_of_payment">Mode of payment:</label>
+                                    <select name="mode_of_payment" class="form-control select2bs4" required id="id_mode_of_payment">
+                                        {% for opt in form.mode_of_payment %}
+                                        {{ opt }}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="id_serial_code">Serial code:</label>
+                                    <input type="text" name="serial_code" maxlength="50" class="form-control" required id="id_serial_code">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="id_payer_account">Payer account:</label>
+                                    <select name="payer_account" class="form-control" required id="id_payer_account">
+                                        {% for opt in form.payer_account %}
+                                        {{ opt }}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-10">
+                                    <label for="id_remarks">Remarks:</label>
+                                    <textarea name="remarks" cols="40" rows="10" class="form-control" required id="id_remarks"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-primary" value="Change Evaluation">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+{% endblock content %}

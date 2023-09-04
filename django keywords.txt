@@ -1,0 +1,51 @@
+env\scripts\activate
+python manage.py runserver
+python manage.py runsslserver
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+
+
+Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatum voluptate natus maiores dolorum facere cupiditate labore veniam dolores est, tempore fuga odit alias maxime reiciendis omnis eveniet tenetur quidem modi.
+
+Fully furnished, neat and clean apartment building with two bedrooms
+
+One of mi favoritos #NissanGTRNismo
+
+Reputation is on point. Lived there for nine months and I loved every moment of it. The best in the area.
+
+def fileupload(request):
+
+    return responsewrapper('pages/foo/help/UploadFileContent.html', locals(),request)
+
+def submitfilecontent(request):
+    myhash = dict()
+    myhash['name'] = request.POST['name'] # works
+    myhash['filedata'] = request.POST['content'] # works
+    handle_uploaded_file(request.FILES['myfile']) # error throws up here.
+    return HttpResponseRedirect("/successupload")
+
+def handle_uploaded_file(f):
+    destination = open('/home/foo/name.txt', 'wb+')
+    for chunk in f.chunks():
+        destination.write(chunk)
+    destination.close()
+
+
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.871499993425!2d36.91680770668756!3d-1.1830197331577958!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f3f09067bad99%3A0xf16d95cc142da70a!2sKenyatta%20University%2C%20Nairobi!5e0!3m2!1sen!2ske!4v1681384068998!5m2!1sen!2ske" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+#sample of django form with custom class filters
+<div class="form-row">
+                                {% for field in form %}
+                                {% if not forloop.last %}
+                                <div class="form-group col-md-4">
+                                    {{field.label_tag}}
+                                    {{ field|addclass:'form-control' }}
+                                </div>
+                                {% else %}
+                                <div class="form-group col-md-10">
+                                    {{field.label_tag}}
+                                    {{ field|addclass:'form-control' }}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>

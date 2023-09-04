@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "moduleResolution": "NodeNext",
+    "noEmit": true,
+    "lib": ["es2018", "DOM"]
+  },
+  "include": [
+    "./src/**/*.ts",
+  ]
+}

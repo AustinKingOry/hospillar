@@ -1,0 +1,55 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<div class="main-body">
+    <div class="record-listing-wrapper">
+        <div class="header-sect">
+            <h3>Employee Attendance Sheet</h3>
+        </div>
+        <div class="listing-cont">
+            {% if all_records|length > 0 %}
+            <table id="main-table-all" class="listing-data-cont table table-bordered table-striped">
+                <thead>
+                    <tr class="info-title-wrapper">
+                        <th class="columnHeader sort-control bi-sort-up"> Num</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Date</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Name</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Department</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Checked In</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Checked Out</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Remarks</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in all_records %}
+                    <tr class="row-items-wrapper">
+                        <td class="row-item">{{forloop.counter}}</td>
+                        <td class="row-item">{{item.created|date:"Y-m-d"}}</td>
+                        <td class="row-item">{{item}}</td>
+                        <td class="row-item">{{item.employee.department}}</td>
+                        <td class="row-item">{{item.check_in_time}}</td>
+                        <td class="row-item">{{item.check_out_time}}</td>
+                        <td class="row-item">{{item.remarks}}</td>
+                        {% if item.check_out_time is None %}
+                        <td class="row-item"><center><a href="{% url 'hr-attendance-file' item.id %}" class="bi-pencil-square"></a></center></td>
+                        {% else %}
+                        <td class="row-item"><center><span class="bi-eye-slash"></span></td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table> 
+            {% else %}
+            <div class="empty-container">
+                <span>There are no records yet.</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% include 'table-scripts.html' %}
+{% endblock content %}

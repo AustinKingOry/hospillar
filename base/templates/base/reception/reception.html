@@ -1,0 +1,40 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<div class="main-body">
+    <h3>Reception</h3>
+    <div class="reception-links">
+        <a href="{% url 'new-pat' %}" class="btn btn-success btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="bi-plus"></i>
+            </span>
+            <span class="text">Add New Patient</span>
+        </a>
+        <a href="{% url 'rec-search-patient' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-search"></i>
+            </span>
+            <span class="text">Search Patient</span>
+        </a>
+        <a href="{% url 'rec-pat-inventory' %}" class="btn btn-primary btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="bi-people"></i>
+            </span>
+            <span class="text">Patients Inventory</span>
+        </a>
+        <a href="" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-person"></i>
+            </span>
+            <span class="text">Today's Patients</span>
+        </a>
+        <a href="" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-calendar"></i>
+            </span>
+            <span class="text">Appointments</span>
+        </a>
+    </div>
+</div>
+{% endblock content %}

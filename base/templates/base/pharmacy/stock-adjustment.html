@@ -1,0 +1,52 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+
+<div class="main-body">
+    <div class="record-listing-wrapper">
+        <div class="listing-cont">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Stocks Adjustment</h3>
+                </div>
+                <div class="card-body">
+                    {% if drugs_inventory|length > 0 %}
+                    <table id="main-table" class="listing-data-cont table table-bordered table-striped">
+                        <thead>
+                            <tr class="info-title-wrapper">
+                                <th class="columnHeader sort-control bi-sort-up"> #</th>
+                                <th class="columnHeader sort-control bi-sort-up"> Drug</th>
+                                <th class="columnHeader sort-control bi-sort-up"> In Stock</th>
+                                <th class="columnHeader sort-control bi-sort-up"> Buying Price</th>
+                                <th class="columnHeader sort-control bi-sort-up"> Selling Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead> 
+                        <tbody>
+                            {% for rec in drugs_inventory %}
+                            <tr class="row-items-wrapper">
+                                <td class="row-item">{{forloop.counter}}</td>
+                                <td class="row-item">{{rec.drug_name}}</td>
+                                <td class="row-item">{{rec.quantity}}</td>
+                                <td class="row-item">{{rec.buying_price}}</td>
+                                <td class="row-item">{{rec.selling_price}}</td>
+                                <td class="row-item"><center><a href="{% url 'pharmacy-adjust-drug' rec.id %}" class="bi-pencil-square"></a></center></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>                
+                    </table>
+                    {% else %}
+                    <div class="empty-container">
+                        <span>There are no drug records yet.</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'table-scripts.html' %}
+<!-- Page specific script -->
+
+{% endblock content %}

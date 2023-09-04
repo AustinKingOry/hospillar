@@ -1,0 +1,172 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<div class="main-body">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Hospital Settings</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'hosp-admin' %}">Admin</a></li>
+                        <li class="breadcrumb-item active">Facility Management</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title fos-unset mb-0 mt-2" style="font-size: 14px;">Facility Management</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="admin-links">
+                        <h4 class="mt-4 mb-2">Hospital Setup</h4>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'admin-settings-facilities' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-primary"><i class="fas fa-hospital"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Hospital Details</span>
+                                        <span class="info-box-number">Info</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'admin-settings-emergency-codes' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-primary"><i class="fas fa-ambulance"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Emergency Codes</span>
+                                        <span class="info-box-number">Pager</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'admin-settings-departments' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-primary"><i class="far fa-flag"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Edit Departments</span>
+                                        <span class="info-box-number">Functions</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'admin-settings-groups' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-primary"><i class="bi-shield-plus"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Groups And Permissions</span>
+                                        <span class="info-box-number">Account Previlleges</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <h4 class="mt-4 mb-2">Finance Accounts Settings</h4>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'admin-settings-services' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-warning"><i class="bi-cash-coin"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Hospital Revenue</span>
+                                        <span class="info-box-number">Services</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'admin-settings-creditors' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-warning"><i class="bi-cash-coin"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Debitors And Creditors</span>
+                                        <span class="info-box-number">Payer Schemes</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'admin-settings-payment-modes' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-warning"><i class="bi-cash-coin"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Payment Modes</span>
+                                        <span class="info-box-number">Payer Types</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'admin-settings-financial-accounts' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-warning"><i class="bi-cash-coin"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Financial Accounts</span>
+                                        <span class="info-box-number">Income & Bank Accounts</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'admin-settings-cash-options' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-warning"><i class="bi-cash-coin"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Cash Payment Options</span>
+                                        <span class="info-box-number">As Cash</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <h4 class="mt-4 mb-2">Human Resource & Leave Settings</h4>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'admin-settings-leave-types' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-danger"><i class="bi-people"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Leave Types</span>
+                                        <span class="info-box-number">Categories</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'admin-settings-leave-statuses' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-danger"><i class="bi-people"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Leave Statuses</span>
+                                        <span class="info-box-number">Stages</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <h4 class="mt-4 mb-2">Procurement Settings</h4>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'admin-settings-suppliers' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-secondary"><i class="bi-truck"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Suppliers</span>
+                                        <span class="info-box-number">Drugs & Equipment</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

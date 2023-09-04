@@ -1,0 +1,53 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+
+<div class="main-body">
+    <div class="record-listing-wrapper">
+        <div class="header-sect">
+            <h3>Hospital Users</h3>
+        </div>
+        <div class="listing-cont">
+            {% if users|length > 0 %}
+            <table id="main-table-all" class="listing-data-cont table table-bordered table-striped">
+                <thead>
+                    <tr class="info-title-wrapper">
+                        <th class="columnHeader sort-control bi-sort-up"> Name</th>
+                        <th class="columnHeader sort-control bi-sort-up"> UID</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Email</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Access Level</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Dept</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Phone</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Joined</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Last Login</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr class="row-items-wrapper">
+                        <td class="row-item">{{user.get_full_name}}</td>
+                        <td class="row-item">{{user.userId}}</td>
+                        <td class="row-item">{{user.email}}</td>
+                        <td class="row-item">{{user.access_level}}</td>
+                        <td class="row-item">{{user.department}}</td>
+                        <td class="row-item">{{user.phone}}</td>
+                        <td class="row-item">{{user.date_joined}}</td>
+                        <td class="row-item">{{user.last_login}}</td>
+                        <td class="row-item"><center><a href="" class="bi-trash2"></a></center></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-container">
+                <span class="error" data-text="There are no users yet."></span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% include 'table-scripts.html' %}
+{% endblock content %}

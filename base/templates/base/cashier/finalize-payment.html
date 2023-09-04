@@ -1,0 +1,57 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<div class="main-body">
+    <div class="container">
+        <h3>Payment Finalization</h3>
+        <div class="form-container">
+            <form action="" method="post">
+                {% csrf_token %}
+                <!-- {{form.as_p}} -->
+                <div class="form-group">
+                    <label for="id_billable_amount">Billable amount:</label>
+                    <input type="number" name="billable_amount" value="{{billable_amount}}" required id="id_billable_amount" class="form-control" placeholder="Amount" readonly>
+                </div>
+                <p class="form-group">
+                    <label for="id_payer">Payer:</label>
+                    <select name="payer" required id="id_payer" class="form-control">
+                        {% for opt in form.payer %}
+                        {{opt}}
+                        {% endfor %}
+                    </select>
+                </p>
+                {% if not patientlog.payment_mode.payer_class.mode_class|lower == 'invoice' %}
+                <p class="form-group">
+                    <label for="id_cash_option">Cash option:</label>
+                    <select name="cash_option" required id="id_cash_option" class="form-control">
+                        {% for opt in form.cash_option %}
+                        {{opt}}
+                        {% endfor %}
+                    </select>
+                </p>
+                <p class="form-group">
+                    <label for="id_cash_value">Cash value:</label>
+                    <input type="number" name="cash_value" value="0" required id="id_cash_value" class="form-control">
+                </p>
+                <p class="form-group">
+                    <label for="id_epay_value">Epay value:<small>*mpesa/eazy pay/airtel money...*</small></label>
+                    <input type="number" name="epay_value" value="0" required id="id_epay_value" class="form-control">
+                </p>
+                {% endif %}
+                <p class="form-group">
+                    <label for="id_invoice_value">Invoice value:</label>
+                    <input type="number" name="invoice_value" value="0" required id="id_invoice_value" class="form-control"> 
+                </p>
+                <p class="form-group">
+                    <label for="id_transaction_code">Transaction code:</label>
+                    <input type="text" name="transaction_code" maxlength="100" required id="id_transaction_code" class="form-control">
+                </p>
+                <div class="field submit-field">
+                    <input type="submit" value="Confirm" class="btn btn-danger">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

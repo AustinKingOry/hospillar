@@ -1,0 +1,47 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+<div class="main-body">
+    <!-- <h3>Payroll Manager</h3> -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Payroll Manager</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="reception-links">
+                <a href="{% url 'hr-add-payroll' %}" class="btn btn-info btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-plus"></i>
+                    </span>
+                    <span class="text">Add New</span>
+                </a>
+                <a href="{% url 'hr-payroll-records' 0 %}" class="btn btn-info btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-arrow-right"></i>
+                    </span>
+                    <span class="text">All Records</span>
+                </a>
+                <a href="{% url 'hr-payroll-records' 1 %}" class="btn btn-info btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-arrow-right"></i>
+                    </span>
+                    <span class="text">Today's Transactions</span>
+                </a>
+                <a href="{% url 'hr-payroll-records' 2 %}" class="btn btn-info btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-arrow-right"></i>
+                    </span>
+                    <span class="text">Pending Requests</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock content %}

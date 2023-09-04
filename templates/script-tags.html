@@ -1,0 +1,30 @@
+{% load static %}
+<script src="{% static 'js/scripts.js' %}"></script> 
+<script src="{% static 'plugins/popper.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'AdminLTE/dist/js/adminlte.js' %}"></script>
+<!-- Bootstrap 4 -->
+<!-- <script src="{% static 'plugins/bootstrap/bootstrap 5.0.2/js/bootstrap.bundle.min.js' %}"></script> -->
+<!-- Sparkline -->
+<!-- <script src="{% static 'AdminLTE/plugins/sparklines/sparkline.js' %}"></script> -->
+<!-- JQVMap -->
+<!-- <script src="{% static 'AdminLTE/plugins/jqvmap/jquery.vmap.min.js' %}"></script> -->
+<!-- <script src="{% static 'AdminLTE/plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script> -->
+<!-- jQuery Knob Chart -->
+<!-- <script src="{% static 'AdminLTE/plugins/jquery-knob/jquery.knob.min.js' %}"></script> -->
+<!-- daterangepicker -->
+<!-- <script src="{% static 'AdminLTE/plugins/moment/moment.min.js' %}"></script> -->
+<!-- <script src="{% static 'AdminLTE/plugins/daterangepicker/daterangepicker.js' %}"></script> -->
+<script>
+    $(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2()
+
+        //Initialize Select2 Elements
+        $('.select2bs4').select2({
+            theme: 'bootstrap4'
+        });
+    });
+</script>

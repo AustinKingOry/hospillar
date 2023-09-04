@@ -1,0 +1,101 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<main class="main-body">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Edit {{keyword|as_words}}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <form action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="form-row d-flex flex-column">
+                                {% for field in form %}
+                                <div class="form-group col-md-4 pl-3">
+                                    {% if field|get_html_type == 'checkbox' %}
+                                    {{ field|addclass:'form-check-input' }}
+                                    {{field.label_tag}}
+                                    {% else %}
+                                    {{field.label_tag}}
+                                    {{ field|addclass:'form-control' }}
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="form-group float-right">
+                                <input type="submit" value="Save {{keyword|as_words}}" class="btn btn-block btn-primary py-3">
+                            </div>
+                        </form>
+                            {% if obj is not None and deletable %}
+                            <form id="deleteForm" action="{% url 'admin-settings-delete' keyword obj.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="confirm_deletion" value="true">
+                                <button type="button" class="btn btn-danger py-3 px-4" id="deleteButton">Delete</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    // Get a reference to the delete button
+const deleteButton = document.getElementById('deleteButton');
+const deleteForm = document.getElementById('deleteForm');
+
+// Add an event listener to the delete button
+const swalWithBootstrapButtons = Swal.mixin({
+		customClass: {
+		  confirmButton: 'btn btn-success',
+		  cancelButton: 'btn btn-danger'
+		},
+		buttonsStyling: false
+	  });
+deleteButton.addEventListener('click', () => {
+  event.preventDefault(); // Prevent the default form submission
+  swalWithBootstrapButtons.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, cancel!',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+        deleteForm.submit();
+    //   swalWithBootstrapButtons.fire(
+    //     'Deleted!',
+    //     'Your file has been deleted.',
+    //     'success'
+    //   ).then(() => {
+    //     // Open the link after deletion confirmation
+    //     window.open('https://example.com', '_blank');
+    //   });
+    } else if (
+      result.dismiss === Swal.DismissReason.cancel
+    ) {
+      swalWithBootstrapButtons.fire(
+        'Cancelled',
+        'Your imaginary file is safe :)',
+        'error'
+      );
+    }
+  });
+});
+
+</script>
+{% endblock content %}

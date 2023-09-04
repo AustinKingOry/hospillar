@@ -1,0 +1,28 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<div class="main-body">
+    <h3>Employee Attendance</h3>
+    <div class="reception-links">
+        <a href="{% url 'hr-attendance-new' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">New Record</span>
+        </a>
+        <a href="{% url 'hr-attendance-daily-list' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">Today's Attendance Sheet</span>
+        </a>
+        <a href="{% url 'hr-attendance-all' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">All Records</span>
+        </a>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,35 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<div class="container">
+    <form method="post" action="">
+        {% csrf_token %}
+        <div class="card card-primary">
+            <div class="card-header">
+                <div class="card-title">Create a New Group</div>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="group_name">Group Name:</label>
+                    <input type="text" id="id_group_name" name="group_name" class="form-control" required>
+                </div>
+                <div class="d-flex flex-wrap">
+                    {% for permission in all_permissions %}
+                    <div class="col-md-3">
+                        <label for="id_permissions_{{ permission.id }}">
+                            <input type="checkbox" name="permissions" value="{{ permission.id }}" id="id_permissions_{{ permission.id }}">
+                            {{ permission.name|cut:"Can " }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Create Group</button>
+            </div>
+        </div>
+    </form>    
+</div>
+
+{% endblock content %}

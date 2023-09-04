@@ -1,0 +1,145 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            position: relative;
+        }
+  
+        .containerbackground {
+            user-select: none;
+            margin: 12rem;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 100;
+            z-index: -1;
+            transform: rotate(-300deg);
+            -webkit-transform: rotate(-300deg);
+            color: #c6afaf;
+        }
+        .header{
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+{% if not paymentlog.pat_log.payment_mode.payer_class.mode_class|lower == 'invoice' %}
+
+<center><img id="logo-header" src="{% static 'img/letter_head.png' %}" alt="Logo"  style="width:100%;"></center>
+<!-- <center style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap: 1em;" width:"100%">
+    <img src="{% static 'img/logo.png' %}" width="100px" alt="sk">
+    <div class="header">
+        <h1 style="margin: 0.1em;margin-bottom: 1em;" class="bold">HOSPILLAR HOSPITAL MANAGEMENT SYSTEM</h1>
+        <p class="bold">P.O. BOX 27.0.0.1 CRUST, KENYA</p>
+        <p class="bold">TEL: 0734-012-619</p>
+        <p class="bold">Email: crusttechnologies1@gmail.com</p>
+    </div>
+    
+</center> -->
+<left><b><u><h4>CASH RECEIPT</h4></u></b></left>
+<hr>
+<table width='100%'>
+    <tr>
+<td width ='25%'><b><u>CLIENT NAME</u></b></td> 
+<td width ='15%' align='left'></td>
+<td width ='15%' align='left'></td>
+<td width ='15%' align='left'></td>
+<td width ='15%'><b>Receipt No</b></td> 
+ <td width ='20%'>{{paymentlog.id}}</td>       
+</tr>
+    <tr>
+<td width ='25%'>{{paymentlog.pat_log.patient}}</td> 
+<td width ='15%' align='left'></td>
+<td width ='15%' align='left'></td>
+<td width ='15%' align='left'></td>
+<td width ='15%'><b>Receipt Date</b></td> 
+ <td width ='20%'>{{paymentlog.pat_log.created|date:'Y-m-d'}}</td>       
+</tr>
+    <tr>
+<td width ='25%'></td> 
+<td width ='15%' align='left'></td>
+<td width ='15%' align='left'></td>
+<td width ='15%' align='left'></td>
+<td width ='15%'><b>File No</b></td> 
+ <td width ='20%'>{{paymentlog.pat_log.patient.op_number}}</td>       
+</tr>
+
+
+</table>
+<hr>
+    <div class="containerbackground">
+           <center>Receipt Valid for <br>HOSPILLAR M.S<br> Receipt Number : {{paymentlog.id}}<br> Patient : {{paymentlog.pat_log.patient}}<br> Payment Mode : {{paymentlog.cash_option}}</center>
+        </div>
+
+
+<table width='100%'>
+       <tr>
+<td width ='30%' align='left'>Item</td> 
+<td width ='10%' align='center'>Price</td>
+<td width ='20%' align='right'>Quantity</td>
+<td width ='10%' align='right'></td> 
+<td width ='10%' align='right'>Total</td>
+<td width ='10%' align='right'></td> 
+<td width ='10%' align='right'>Run Total</td> 
+</tr>
+</table>
+<hr>
+
+<table width="100%">
+    {% for item in allItems %}	  
+       <tr>
+<td width ='30%' align='left'>{{item}}</td> 
+<td width ='10%' align='center'>{{item.price}}</td>
+<td width ='20%' align='right'>{{item.quantity}}</td>
+<td width ='10%' align='right'></td> 
+
+<td width ='10%' align='right'>{{item.total_amount}}</td>
+<td width ='10%' align='right'></td> 
+<td width ='10%' align='right'>{{cumulative_totals|get_list_item:forloop.counter}}</td>
+</tr>
+{% endfor %}
+</table>
+<hr>
+<table width="100%">
+       <tr>
+        <td width ='30%' align='left'><u><strong>Total Amount</strong></u></td> 
+<td width ='10%' align='center'></td>
+<td width ='20%' align='right'></td>
+<td width ='10%' align='right'></td> 
+
+<td width ='10%' align='right'></td>
+<td width ='10%' align='right'></td> 
+<td width ='10%' align='right'><strong>{{paymentlog.billable_amount}}</strong></td>
+</tr>
+</table>
+<!-- <hr> -->
+<table width="100%">
+       <tr>
+        <td width ='30%' align='left'><u><strong>Total Balance</strong></u></td> 
+<td width ='10%' align='center'></td>
+<td width ='20%' align='right'></td>
+<td width ='10%' align='right'></td> 
+
+<td width ='10%' align='right'></td>
+<td width ='10%' align='right'></td> 
+<td width ='10%' align='right'><strong>{{paymentlog.balance}}</strong></td>
+</tr>
+</table>
+<hr>
+Payment mode .................{{paymentlog.cash_option}}.............................<br>
+Served By .........{{request.user}}..................{% now 'Y-m-d'%}.................<br>
+Client Sign's ...............................................<br>
+
+  </div>
+  {% endif %}
+</body>
+  
+</html>
+{% endblock content %}

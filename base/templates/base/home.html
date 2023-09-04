@@ -1,0 +1,424 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load custom_tags %}
+{% block content %}
+<head>
+	<style>
+body {
+  background-color: #f0f5f9;
+}
+/* table{
+	width: 96%;
+	margin: 0 auto;
+} */
+table thead{
+	background-color: var(--brand-white);
+	border: none;
+}
+table thead th{
+	font-size: 16px;
+	font-weight: 500;
+}
+table tbody{
+	border-top: 0;
+	font-size: 14px;
+}
+
+.card {
+  border: none;
+}
+
+.card-header {
+	background-color: var(--brand-blue);
+	color: var(--brand-white);
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+.btn-tool{
+	color: var(--brand-white);
+}
+.card-body {
+  background-color: var(--brand-white);
+  color:  var(--brand-black);
+}
+
+/* Customize other elements as needed */
+
+	</style>
+</head>
+<div class="main-body">
+    <div class="container-md mb-4">
+        <div class="row">
+            <div class="d-flex flex-row w-fit p-2 align-items-center gap-2">
+                <img src="{% static user.profile_photo.url %}" alt="avatar" width="70" height="70" class="img-normal rounded">
+                <div class="row align-items-center">
+                    <p class="m-0">{{'Good '|time_greeting}}, <strong>{{user}}</strong></p>
+                    <small class="text-muted">Admin account</small>
+                </div>
+            </div>
+            
+        </div>
+        <div class="row">
+            <div class="content-header w-100">
+                <div class="row">
+                    <div class="col-sm-6 p-1">
+                        <h3 class="text-brand-black">Analytics</h3>
+                    </div>
+                    <div class="col-sm-6 p-1">
+                        <div class="float-sm-right">
+                            <a href="{% url 'edit-profile' %}" class="btn btn-success btn-success-brand border-0 bi-gear shadow-sm"> Account Settings <i class="bi-chevron-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 d-flex flex-wrap flex-row gap-4 p-2">
+                <div class="p-4 bor-rad-1 shadow d-flex flex-row align-items-center top-outline-success fill-480 bg-white">
+                    <div class="col-md-8 d-flex flex-column">
+                        <span class="col-md-12"><small class="m-0">Total Expenses</small></span>
+                        <h2 class="md bold">0</h2>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="{% static 'svgs/project.svg' %}" alt="icon" width="80" height="80" class="bg-light p-2 rounded-circle">
+                    </div>
+                </div>
+                <div class="p-4 bor-rad-1 shadow d-flex flex-row align-items-center fill-480 top-outline-primary bg-white">
+                    <div class="col-md-8 d-flex flex-column">
+                        <span class="col-md-12"><small class="m-0">Total Collection</small></span>
+                        <h2 class="md bold">0</h2>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="{% static 'svgs/project-active.svg' %}" alt="icon" width="80" height="80" class="bg-light p-2 rounded-circle">
+                    </div>
+                </div>
+                <div class="p-4 bor-rad-1 shadow d-flex flex-row align-items-center fill-480 top-outline-primary bg-white">
+                    <div class="col-md-8 d-flex flex-column">
+                        <span class="col-md-12"><small class="m-0">New Patients</small></span>
+                        <h2 class="md bold">{{patient_files|length}}</h2>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="{% static 'svgs/community.svg' %}" alt="icon" width="80" height="80" class="bg-light p-2 rounded-circle">
+                    </div>
+                </div>
+                <div class="p-4 bor-rad-1 shadow d-flex flex-row align-items-center fill-480 top-outline-primary bg-white">
+                    <div class="col-md-8 d-flex flex-column">
+                        <span class="col-md-12"><small class="m-0">Total Patients</small></span>
+                        <h2 class="lg bold">{{patient_files|length}}</h2>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="{% static 'svgs/community.svg' %}" alt="icon" width="80" height="80" class="bg-light p-2 rounded-circle">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="container-md mt-5">
+  <div class="row">
+    <div class="col-md-8 connectedSortable">
+        <div class="card">
+            <div class="card-header border-transparent">
+            <h3 class="card-title">Latest Patients</h3>
+
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+                </button>
+            </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table m-0" id="main-table">
+                        <thead>
+                            <tr>
+                                <th>File No.</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Payer</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pat_file in patient_files %}
+                            <tr>
+                                <td>{{pat_file.patlog_id}}</td>
+                                <td>{{pat_file.patient.full_name}}</td>
+                                <td><span class="sparkbar">{{pat_file.doctor}}</span></td>
+                                <td><span class="sparkbar">{{pat_file.payment_mode}}</span></td>
+                                <td>
+                                    {% if pat_file.cash_cleared %}
+                                    <div class="badge badge-success" data-color="#00a65a" data-height="20">Cleared</div>
+                                    {% else %}
+                                    <div class="badge badge-warning" data-color="#00a65a" data-height="20">In Progress</div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+		<div class="card mb-4 p-0">
+			<div class="card-header">
+				<div class="card-title">Installation Requests</div>
+				<div class="card-tools">
+					<button type="button" class="btn btn-tool" data-card-widget="collapse">
+						<i class="fas fa-minus"></i>
+					</button>
+					<button type="button" class="btn btn-tool" data-card-widget="remove">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+			</div>
+			<div class="card-body">
+			<div class="scrollable-x w-100 d-flex flex-row">
+				{% if files|length >= 1 %}
+				{% for f in files %}
+				<div class="col-md-4 border p-2 m-2">
+					<div class="col-md-12 text-center">
+						<img src="{% static f.farmer.avatar.url %}" alt="farmer" width="70" height="70" class="rounded-circle img-normal border mx-auto">
+						<p>{{f.farmer.get_full_name}}</p>
+					</div>					
+					<div class="d-flex flex-row gap-2 align-items-center gap-2 col-md-12 justify-content-center">
+						<span>{{f.farmer.location}}</span>
+						{% if not f.completed %}
+						<small class="text-brand-orange bg-light p-2 fos-10 bor-rad-1 shadow-sm">Pending</small>
+						{% else %}
+						<small class="text-brand-green bg-light p-2 fos-10 bor-rad-1 shadow-sm">Completed</small>
+						{% endif %}
+					</div>
+					<div class="pt-2 col-md-12">
+						<a href="" class="btn btn-success btn-success-brand border-0 btn-block">View File</a>
+						<a href="" class="btn btn-success-outline btn-success-outline-brand btn-block">Open Project</a>
+					</div>
+				</div>
+				{% endfor %}
+				{% else %}
+				<div class="col-md-6 mx-auto">
+					<p class="text-center">No data for now.</p>
+				</div>
+				{% endif %}
+				{% if files|length > 1 %}
+				<div class="col-md-4 h-100 d-flex align-items-center w-fit">
+					<a href="" class="d-flex align-items-center p-3"><i class="bi-three-dots text-brand-black"></i></a>
+				</div>
+				{% endif %}
+			</div>
+			<!-- Display pending and accepted installation requests -->
+			</div>
+		</div>
+
+		<!-- Schedule and Calendar Section -->
+		<div class="card mb-4 p-0">
+			<div class="card-header p-2">
+				<div class="card-title w-fit m-0 p-0">Schedule and Calendar</div>
+				<div class="card-tools w-fit m-0 p-0">
+					<button type="button" class="btn btn-tool" data-card-widget="collapse">
+						<i class="fas fa-minus"></i>
+					</button>
+					<button type="button" class="btn btn-tool" data-card-widget="remove">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+			</div>
+			<div class="card-body">
+			<!-- Display installation calendar and upcoming installations -->
+			</div>
+		</div>
+		<div class="card p-0">
+			<div class="card-header p-2">
+				<div class="card-title w-fit m-0 p-0">All Projects</div>
+				<div class="card-tools w-fit m-0 p-0">
+					<button type="button" class="btn btn-tool" data-card-widget="collapse">
+						<i class="fas fa-minus"></i>
+					</button>
+					<button type="button" class="btn btn-tool" data-card-widget="remove">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+			</div>
+			<div class="card-body p-0">
+				<!-- <div class="row"> -->
+					<div class="col-md-12 bg-white p-3 rounded scrollable-x">                
+						<table id="main-table-mini" class="table table-striped table-responsive">
+							<caption> <small class="text-muted">All projects</small></caption>
+							<thead class="">
+								<th>#</th>
+								<th>Client Name</th>
+								<th>Scheduled Date</th>
+								<th>System</th>
+								<th>Location</th>
+								<th>Status</th>
+								<th></th>
+							</thead>
+							<tbody>
+								{% for f in files %}
+								<tr>
+									<td>{{forloop.counter}}</td>
+									<td>{{f.farmer.get_full_name}}</td>
+									<td>{{f.application_file.created|date}}</td>
+									<td>{{f.application_file.quiz_6|truncatewords:4}}</td>
+									<td>{{f.farmer.location}}</td>
+									{% if not f.completed %}
+									<td><span class="badge badge-warning">pending</span></td>
+									{% else %}
+									<td><span class="badge badge-success">Installed</span></td>
+									{% endif %}
+									<td><a href="" class="fa fa-chevron-right"></a></td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				<!-- </div> -->
+			<!-- Display installation status and progress updates -->
+			</div>
+		</div>
+		<div class="card p-0">
+			<div class="card-header p-2">
+				<div class="card-title w-fit m-0 p-0">Installation Progress</div>
+				<div class="card-tools w-fit m-0 p-0">
+					<button type="button" class="btn btn-tool" data-card-widget="collapse">
+						<i class="fas fa-minus"></i>
+					</button>
+					<button type="button" class="btn btn-tool" data-card-widget="remove">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>				
+			</div>
+			<div class="card-body">
+				<!-- Display installation status and progress updates -->
+				<canvas id="installationChart" width="400" height="200"></canvas>
+			</div>
+		</div>
+		<div class="card p-0">
+			<div class="card-header p-2">
+				<div class="card-title w-fit m-0 p-0">Installed Systems Track</div>
+				<div class="card-tools w-fit m-0 p-0">
+					<button type="button" class="btn btn-tool" data-card-widget="collapse">
+						<i class="fas fa-minus"></i>
+					</button>
+					<button type="button" class="btn btn-tool" data-card-widget="remove">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>				
+			</div>
+			<div class="card-body">
+				<!-- Display installation status and progress updates -->
+				<canvas id="installedSystemsChart" width="100" height="100"></canvas>
+			</div>
+		</div>
+    </div>
+
+    <div class="col-md-4">
+		<!-- Contact Information Section -->
+		<div class="card mb-4 p-0">
+			<div class="card-header p-2">
+				<div class="card-title w-fit m-0 p-0">Contact Information</div>
+				<div class="card-tools w-fit m-0 p-0">
+					<button type="button" class="btn btn-tool" data-card-widget="collapse">
+						<i class="fas fa-minus"></i>
+					</button>
+					<button type="button" class="btn btn-tool" data-card-widget="remove">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+			
+			</div>
+			<div class="card-body">
+				<!-- Display customer support and technical support contacts -->
+			</div>
+		</div>
+
+		<!-- Documentation and Instructions Section -->
+		<div class="card p-0">
+			<div class="card-header p-2">
+				<div class="card-title w-fit m-0 p-0">Profile Info</div>
+				<div class="card-tools w-fit m-0 p-0">
+					<button type="button" class="btn btn-tool" data-card-widget="collapse">
+						<i class="fas fa-minus"></i>
+					</button>
+					<button type="button" class="btn btn-tool" data-card-widget="remove">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>          
+			</div>
+			<div class="card-body p-2">
+				<div class="col-md-12">
+					<div class="col-md-8 mx-auto text-center">
+						<img src="{% static user.profile_photo.url %}" alt="avatar" class="rounded-circle border img-normal" width="150" height="150">
+						<div class="row d-flex flex-column mt-2">
+							<p>{{user.get_full_name}}</p>
+							<small class="text-muted">{{partner.role}}</small>
+						</div>
+					</div>
+					<div class="col-md-12 p-3">
+						<a href="{% url 'edit-profile' %}" class="btn btn-success btn-success-brand border-0 btn-block">Edit Profile</a>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Bootstrap JS (jQuery and Popper.js are required) -->
+<!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+
+<!-- Custom JavaScript -->
+<script>
+    // Example data for payment trends
+const installationData = {
+  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+  datasets: [
+    {
+      label: 'Installations',
+      backgroundColor: 'rgba(40, 167, 69, 0.5)', // Green with opacity
+      borderColor: 'rgba(40, 167, 69, 1)', // Solid green
+      borderWidth: 1,
+      data: [15, 12, 18, 13, 16, 14],
+    },
+  ],
+};
+
+// Example data for system performance
+const installedSystemsData = {
+  labels: ['Submersible', 'Drip', 'Overhead'],
+  datasets: [
+    {
+      data: [75, 85, 60],
+      backgroundColor: ['rgba(0, 123, 255, 0.8)', 'rgba(40, 167, 69, 0.8)', 'rgba(0, 0, 0, 0.8)'],
+    },
+  ],
+};
+
+// Create and display a payment trends chart
+const installationChartCanvas = document.getElementById('installationChart');
+const installationChart = new Chart(installationChartCanvas, {
+  type: 'line',
+  data: installationData,
+});
+
+// Create and display a system performance chart
+const installedSystemsChartCanvas = document.getElementById('installedSystemsChart');
+const installedSystemsChart = new Chart(installedSystemsChartCanvas, {
+  type: 'doughnut',
+  data: installedSystemsData,
+  options: {
+    legend: {
+      position: 'right',
+    },
+  },
+});
+
+</script>
+{% include 'table-scripts.html' %}
+{% endblock content %}

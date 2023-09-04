@@ -1,0 +1,51 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<div class="main-body">
+    <div class="record-listing-wrapper">
+        <div class="header-sect">
+            <h3>All Employees</h3>
+        </div>
+        <div class="listing-cont">
+            {% if all_employees|length > 0 %}
+            <table id="main-table" class="listing-data-cont table table-bordered table-striped">
+                <thead>
+                    <tr class="info-title-wrapper">
+                        <th class="columnHeader sort-control bi-sort-up"> Num</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Name</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Department</th>
+                        <th class="columnHeader sort-control bi-sort-up"> National I.D</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Gender</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Joined On</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Active Account</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in all_employees %}
+                    <tr class="row-items-wrapper">
+                        <td class="row-item">{{forloop.counter}}</td>
+                        <td class="row-item">{{item}}</td>
+                        <td class="row-item">{{item.department}}</td>
+                        <td class="row-item">{{item.national_id}}</td>
+                        <td class="row-item">{{item.gender}}</td>
+                        <td class="row-item">{{item.created|date:"Y-m-d"}}</td>
+                        <td class="row-item">{{item.active_status}}</td>
+                        <td class="row-item"><center><a href="{% url 'hr-employee-file' item.id %}" class="bi-pencil-square"></a></center></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table> 
+            {% else %}
+            <div class="empty-container">
+                <span>There are no records yet.</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% include 'table-scripts.html' %}
+{% endblock content %}

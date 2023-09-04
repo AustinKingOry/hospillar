@@ -1,0 +1,132 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<div class="main-body">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sdm-6">
+                    <h1 align="center">DAILY COLLECTION REPORT</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="row">
+            <p><strong>Printed By: </strong>{{request.user.get_full_name}}</p>
+            <p><strong>Printing Date: </strong>{{now|date}}</p>
+            <p><strong>For Date: </strong></p>
+        </div><hr>
+        <table class="table">
+            <thead>
+                <th>Description</th>
+                <th>Outpatient</th>
+                <th>Inpatient</th>
+                <th>Total</th>
+            </thead>
+            <tbody>
+                {% for payment_mode,amount in payment_modes.items %}
+                <tr>
+                    <td>{{payment_mode}}</td>
+                    <td>{{amount|get_list_item_abs:0}}</td>
+                    <td>{{amount|get_list_item_abs:1}}</td>
+                    <td>{{amount|get_list_item_abs:2}}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td>{{totals_list.total_amount|get_list_item_abs:0}}</td>
+                    <td>{{totals_list.total_amount|get_list_item_abs:1}}</td>
+                    <td>{{totals_list.total_amount|get_list_item_abs:2}}</td>
+                </tr>
+                <tr style="background-color: blue;color: aliceblue;">
+                    <td><strong>Insurances</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% for payer,amount in insurances.items %}
+                <tr>
+                    <td>{{payer}}</td>
+                    <td>{{amount|get_list_item_abs:0}}</td>
+                    <td>{{amount|get_list_item_abs:1}}</td>
+                    <td>{{amount|get_list_item_abs:2}}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td>{{totals_list.total_inv|get_list_item_abs:0}}</td>
+                    <td>{{totals_list.total_inv|get_list_item_abs:1}}</td>
+                    <td>{{totals_list.total_inv|get_list_item_abs:2}}</td>
+                </tr>
+                <tr style="background-color: blue;color: aliceblue;">
+                    <td><strong>Cash & Epay</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% for opt,amount in cash_options.items %}
+                <tr>
+                    <td>{{opt}}</td>
+                    <td>{{amount|get_list_item_abs:0}}</td>
+                    <td>{{amount|get_list_item_abs:1}}</td>
+                    <td>{{amount|get_list_item_abs:2}}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <!-- <td>{{totals_list.total_cash|add:totals_list.total_epay}}</td> -->
+                    <td>{{totals_list.total_receipts|get_list_item_abs:0}}</td>
+                    <td>{{totals_list.total_receipts|get_list_item_abs:1}}</td>
+                    <td>{{totals_list.total_receipts|get_list_item_abs:2}}</td>
+                </tr>
+                <tr style="background-color: blue;color: aliceblue;">
+                    <td><strong>Departmental</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% for dpt,amount in departments.items %}
+                <tr>
+                    <td>{{dpt}}</td>
+                    <td>{{amount|get_list_item_abs:0}}</td>
+                    <td>{{amount|get_list_item_abs:1}}</td>
+                    <td>{{amount|get_list_item_abs:2}}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td>Pharmacy</td>
+                    <td>{{pharmacy_amount|get_list_item_abs:0}}</td>
+                    <td>{{pharmacy_amount|get_list_item_abs:1}}</td>
+                    <td>{{pharmacy_amount|get_list_item_abs:2}}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td>{{totals_list.total_amount|get_list_item_abs:0}}</td>
+                    <td>{{totals_list.total_amount|get_list_item_abs:1}}</td>
+                    <td>{{totals_list.total_amount|get_list_item_abs:2}}</td>
+                </tr>
+                <tr style="background-color: blue;color: aliceblue;">
+                    <td><strong>Total Closing Balance</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{totals_list.total_amount|get_list_item_abs:2}}</td>
+                </tr>
+                <tr style="background-color: blue;color: aliceblue;">
+                    <td><strong>Total Clients</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{all_records|length}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    window.onload=()=>{
+        window.print()
+    }
+</script>
+
+{% endblock content %}

@@ -1,0 +1,84 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<div class="container">
+    <form method="post" action="">
+        <div class="card card-primary">
+            <div class="card-header">
+                <div class="card-title">Edit Permissions for Group: {{ group }}</div>
+            </div>
+            <div class="card-body">
+                {% csrf_token %}
+                <div class="d-flex flex-wrap">
+                {% for permission in all_permissions %}
+                    <div class="col-md-3">
+                        <label for="id_permissions_{{ permission.id }}">
+                            <input type="checkbox" name="permissions" id="id_permissions_{{ permission.id }}" value="{{ permission.id }}"
+                                {% if permission in group.permissions.all %}checked{% endif %}>
+                            {{ permission.name|cut:"Can " }}
+                        </label>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary float-right">Save Permissions</button>
+                </form>
+                <form id="deleteForm" action="{% url 'delete-group' group.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="confirm_deletion" value="true">
+                    <button type="button" class="btn btn-danger" id="deleteButton">Delete</button>
+                </form>
+            </div>
+        </div>
+</div>
+
+<script>
+    // Get a reference to the delete button
+const deleteButton = document.getElementById('deleteButton');
+const deleteForm = document.getElementById('deleteForm');
+
+// Add an event listener to the delete button
+const swalWithBootstrapButtons = Swal.mixin({
+		customClass: {
+		  confirmButton: 'btn btn-success',
+		  cancelButton: 'btn btn-danger'
+		},
+		buttonsStyling: true
+	  });
+deleteButton.addEventListener('click', () => {
+  event.preventDefault(); // Prevent the default form submission
+  swalWithBootstrapButtons.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, cancel!',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+        deleteForm.submit();
+    //   swalWithBootstrapButtons.fire(
+    //     'Deleted!',
+    //     'Your file has been deleted.',
+    //     'success'
+    //   ).then(() => {
+    //     // Open the link after deletion confirmation
+    //     window.open('https://example.com', '_blank');
+    //   });
+    } else if (
+      result.dismiss === Swal.DismissReason.cancel
+    ) {
+      swalWithBootstrapButtons.fire(
+        'Cancelled',
+        'You have cancelled the deletion :)',
+        'error'
+      );
+    }
+  });
+});
+
+</script>
+{% endblock content %}

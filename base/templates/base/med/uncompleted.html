@@ -1,0 +1,50 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+
+<div class="main-body">
+    <div class="record-listing-wrapper">
+        <div class="header-sect">
+            <h3>Med Uncompleted Patients</h3>
+        </div>
+        <div class="listing-cont">
+            {% if patientlogs|length > 0 %}
+            <table id="main-table" class="listing-data-cont table table-bordered table-striped">
+                <thead>
+                    <tr class="info-title-wrapper">
+                        <th class="columnHeader sort-control bi-sort-up"> Num</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Name</th>
+                        <th class="columnHeader sort-control bi-sort-up"> File Number</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Payer</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Gender</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Visit</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pat in patientlogs %}
+                    <tr class="row-items-wrapper">
+                        <td class="row-item">{{forloop.counter}}</td>
+                        <td class="row-item">{{pat.patient}}</td>
+                        <td class="row-item">{{pat.patlog_id}}</td>
+                        <td class="row-item">{{pat.patient.payment_mode}}</td>
+                        <td class="row-item">{{pat.patient.gender}}</td>
+                        <td class="row-item">{{pat.patient.admission_category}}</td>
+                        <td class="row-item"><center><a href="{% url 'med-patient-file' pat.id %}" class="bi-pencil-square"></a></center></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+            {% else %}
+            <div class="empty-container">
+                <span>There are no patient records yet.</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% include 'table-scripts.html' %}
+{% endblock content %}

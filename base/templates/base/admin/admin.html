@@ -1,0 +1,34 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<div class="main-body">
+    <h3>Admin Panel</h3>
+    <div class="admin-links">
+        <a href="{% url 'admin-new-account' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="bi-person"></i>
+            </span>
+            <span class="text">Add New User</span>
+        </a>
+        <a href="{% url 'admin-users-list' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="bi-people-fill"></i>
+            </span>
+            <span class="text">Hospital Users</span>
+        </a>
+        <a href="{% url 'admin-settings' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="bi-gear-fill"></i>
+            </span>
+            <span class="text">Hospital Settings</span>
+        </a>
+        <a href="{% url 'admin-patientlogs-list' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="bi-clipboard-fill"></i>
+            </span>
+            <span class="text">Patient Log Files</span>
+        </a>
+    </div>
+</div>
+{% endblock content %}

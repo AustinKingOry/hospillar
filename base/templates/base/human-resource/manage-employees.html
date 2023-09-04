@@ -1,0 +1,40 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<div class="main-body">
+    <h3>Manage Employees</h3>
+    <div class="reception-links">
+        <a href="{% url 'hr-new-employee' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">New Employee</span>
+        </a>
+        <a href="{% url 'hr-evaluation' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">Employee Evaluation</span>
+        </a>
+        <a href="{% url 'hr-employee-list' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">Employee Termination</span>
+        </a>
+        <a href="{% url 'hr-employee-list' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">Employee Files</span>
+        </a>
+        <!-- <a href="{% url 'investigations-completed' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">Reports</span>
+        </a> -->
+    </div>
+</div>
+{% endblock content %}

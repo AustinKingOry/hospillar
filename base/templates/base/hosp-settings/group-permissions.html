@@ -1,0 +1,70 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+
+<div class="main-body">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Groups</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'hosp-admin' %}">Admin</a></li>
+                        <li class="breadcrumb-item active">Groups</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container p-2">
+        <div class="col-md-4">
+            <a href="create-group" class="btn btn-primary">+ Create New Group</a>
+        </div>
+    </div>
+    <div class="container bg-white">
+        {% for group, perms in group_permissions.items %}
+        <div class="row p-4 border">
+            <div class="row col-md-12 border-bottom mx-auto pb-2 mb-0 align-items-center">
+                <div class="row col-md-6 align-items-center">
+                    <h5 class="p-0">{{ group }}</h5><br>
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'edit-group-permissions' group.id %}" class="btn btn-sm btn-outline-primary float-sm-right mx-2">Edit Group</a>
+                    <a href="{% url 'add-users-to-group' group.id %}" class="btn btn-sm btn-primary float-sm-right mx-2">Edit Members</a>
+                </div>
+            </div>            
+            <div class="row col-md-12 p-3">
+                <div class="col-md-6">
+                    <p class="bold text-red">Members</p>
+                    <ul>
+                        {% for grp,users in members.items %}
+                            {% if grp == group %}
+                                {% for m in users %}
+                        <li>{{ m.username }}</li>
+                                {% empty %}
+                        <span class="text-muted">No Members</span>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <p class="bold text-red">Permissions</p>
+                    <div class="d-flex flex-wrap gap-2 p-2 border-top y-scrollable" style="max-height: 400px;">
+                    {% for permission in perms %}
+                        <span class="badge badge-primary"> Can {{ permission.name|cut:"Can " }}</span>
+                    {% empty %}
+                        <span class="text-muted">No Permissions Listed.</span>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        {% endfor %}    
+    </div>
+</div>
+{% endblock content %}

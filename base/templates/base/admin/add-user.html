@@ -1,0 +1,88 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<div class="main-body">
+    <div class="form-container">
+        <h3>New User</h3>
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- {{form.as_p}} -->
+            <div class="data-division">
+                <div class="field">
+                    <label for="id_username">Username:</label>
+                    <input type="text" name="username" class="input-field" maxlength="150" autofocus required id="id_username" placeholder="Username">
+                </div>
+                <div class="field">
+                    <label for="id_first_name">First name:</label>
+                    <input type="text" name="first_name" class="input-field" maxlength="150" id="id_first_name" placeholder="First Name">
+                </div>
+                <div class="field">
+                    <label for="id_last_name">Last name:</label>
+                    <input type="text" name="last_name" class="input-field" maxlength="150" id="id_last_name" placeholder="Last Name">
+                </div>
+                <div class="field">
+                    <label for="id_email">Email address:</label>
+                    <input type="email" name="email" class="input-field" maxlength="254" id="id_email" placeholder="Email">
+                </div>
+                <div class="field">
+                    <label for="id_phone">Phone:</label>
+                    <input type="text" name="phone" class="input-field" maxlength="15" required id="id_phone" placeholder="+254*********">
+                </div>
+                <div class="field">
+                    <label for="id_gender">Gender:</label>
+                    <select name="gender" id="id_gender" class="input-field" required>
+                        <option value="">--Select--</option>
+                        <option value="M">M</option>
+                        <option value="F">F</option>
+                    </select>
+                </div>
+            </div>
+            <div class="data-division">
+                <div class="field">
+                    <label for="id_access_level">Access level:</label>
+                    <select name="access_level" id="id_access_level" class="input-field" required>
+                        <option value="">--Select--</option>
+                        <option value="1">1 <small>(Full Control)</small></option>
+                        <option value="2">2 <small>(Partial Control)</small></option>
+                        <option value="3">3 <small>(Data Entry)</small></option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="id_department">Department:</label>
+                    <select name="department" class="input-field" required id="id_department">
+                        <option value="">---------</option>
+                        {% for dpt in departments %}
+                        <option value="{{dpt.id}}">{{dpt}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="id_profile_photo">Profile photo:</label>
+                    <input type="file" name="profile_photo" class="input-field" accept="image/*" id="id_profile_photo">
+                </div>
+                <div class="field">
+                    <label for="id_password1">Password:</label>
+                    <input type="password" name="password1" class="input-field" autocomplete="new-password" required id="id_password1" placeholder="********">
+                </div>
+                <div class="field">
+                    <label for="id_password2">Password confirmation:</label>
+                    <input type="password" name="password2" class="input-field" autocomplete="new-password" required id="id_password2" placeholder="********">
+                </div>
+                <div class="field form-group">
+                    <label for="id_groups">Privilleges:</label>
+                    <select name="groups" class="input-field select2bs4" required id="id_groups" multiple>
+                        <option value="">--select--</option>
+                        {% for grp in groups %}
+                        <option value="{{grp.id}}">{{grp}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <input type="submit" class="submit-field" value="Create User">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

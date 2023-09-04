@@ -1,0 +1,29 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<div class="container">
+    <form method="post" action="">
+        {% csrf_token %}
+        <div class="card card-primary">
+            <div class="card-header">
+                <div class="card-title">Edit Members of Group: {{ group.name }}</div>
+            </div>
+            <div class="card-body">
+                {% for user in all_users %}
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" name="users" id="id_users_{{user.id}}" value="{{user.id}}" class="custom-control-input" {% if user in group_users %}checked{% endif %}>
+                        <label for="id_users_{{user.id}}" class="custom-control-label">{{user}}</label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Add Users to Group</button>
+            </div>
+        </div>
+    </form>    
+</div>
+
+{% endblock content %}

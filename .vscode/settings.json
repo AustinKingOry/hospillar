@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "*.html": "html",
+        "iostream": "cpp",
+        "ostream": "cpp",
+        "string": "cpp",
+        "fstream": "cpp",
+        "ios": "cpp",
+        "xutility": "cpp",
+        "iosfwd": "cpp",
+        "xlocale": "cpp",
+        "xlocinfo": "cpp",
+        "xstring": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

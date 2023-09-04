@@ -1,0 +1,101 @@
+{% load static %}
+<nav class="topnav navbar navbar-expand navbar-light mb-2 static-top shadow main-header">
+    
+    <!-- <div class="logged-in-user">
+        <img src="{% static request.user.profile_photo.url %}" alt="user">
+        {% if request.user.is_authenticated %}
+        <h4>{{user}}</h4>
+        {% endif %}
+    </div> -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <!-- <li class="nav-item d-none d-sm-inline-block">
+            <button class="nav-link btn btn-danger bi-exclamation-triangle text-white" data-bs-toggle="modal" data-bs-target="#emcCodeModal"> Emergency</button>
+        </li> -->
+    </ul>
+    <ul class="navbar-nav ml-auto align-items-center">
+        <li class="nav-item" title="Toggle Fullscreen">
+            <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                <i class="fas fa-expand-arrows-alt"></i>
+            </a>
+        </li>
+        <div class="topbar-divider d-none d-sm-block"></div>
+        <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="mr-2 d-none d-lg-inline text-gray-600 bold">{{user.get_full_name}}</span>
+                <img class="img-profile rounded-circle"
+                    src="{% static request.user.profile_photo.url %}">
+            </a>
+            <!-- Dropdown - User Information -->
+            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="userDropdown">
+                <a class="dropdown-item user-dropdown" href="{% url 'edit-profile' %}">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Profile
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item user-dropdown" href="" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Logout
+                </a>
+            </div>
+        </li>
+    </ul>
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" class="bi-x"></span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="{% url 'signout' %}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Emergency Codes Modal-->
+    <div class="modal fade" id="emcCodeModal" tabindex="-1" role="dialog" aria-labelledby="emcModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="emcModalLabel">Select Emergency Code:</h5>
+                    <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" class="bi-x"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td><span class="text-red">Code Red - <small>Fire.</small></span></td>
+                                <td style="text-align: right;"><a class="btn btn-danger" href="#">Send Alert</a></td>
+                            </tr>
+                            <tr>
+                                <td><span class="text-blue">Code Blue - <small>Cardiac Arrest - Medical Emergency.</small></span></td>
+                                <td style="text-align: right;"><a class="btn btn-danger" href="#">Send Alert</a></td>
+                            </tr>
+                            <tr>
+                                <td><span class="text-green">Code Green - <small>Evacuation.</small></span></td>
+                                <td style="text-align: right;"><a class="btn btn-danger" href="#">Send Alert</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</nav>

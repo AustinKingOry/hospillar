@@ -1,0 +1,85 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<div class="main-body">
+    <div class="form-container">
+        <h3>Nurse Patient File</h3>
+        <form action="" method="post">
+            {% csrf_token %}            
+            <div class="data-division">
+                <div class="field">
+                    <label for="id_patient_num">Date:</label>
+                    <input type="datetime" class="input-field" id="id_patient_created" value="{{patientlog.created}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_patient_num">Patient Number:</label>
+                    <input type="text" class="input-field" id="id_patient_num" placeholder="ID" value="{{patientlog.patient.patId}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_patient">Patient:</label>
+                    <input type="text" name="patient" class="input-field" id="id_patient" placeholder="Patient Name" value="{{patientlog.patient}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_patient_age">Age:</label>
+                    <input type="text" class="input-field" id="id_patient_age" placeholder="Age" value="{{patientlog.patient.date_of_birth|age}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_patient_gender">Gender:</label>
+                    <input type="text" class="input-field" id="id_patient_gender" placeholder="Gender" value="{{patientlog.patient.gender}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_marital">Marital Status:</label>
+                    <input type="text" class="input-field" id="id_marital" placeholder="Marital Status" value="{{patientlog.patient.marital_status}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_doctor">Doctor:</label>
+                    <input type="text" name="doctor" class="input-field" id="id_doctor" placeholder="doctor Name" value="{{patientlog.doctor}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_payment_mode">Payer:</label>
+                    <input type="text" name="payment_mode" class="input-field" class="input-field" id="id_payment_mode" placeholder="Payer" value="{{patientlog.payment_mode}}" readonly>
+                </div>
+            </div>
+            <div class="data-division">
+                <div class="field">
+                    <label for="id_body_temp">Body temp:</label>
+                    <input type="text" name="body_temp" class="input-field" maxlength="7" required id="id_body_temp" value="{{patientlog.body_temp}}">
+                </div>
+                <div class="field">
+                    <label for="id_weight">Weight:</label>
+                    <input type="text" name="weight" class="input-field" maxlength="5" required id="id_weight" value="{{patientlog.weight}}">
+                </div>
+                <div class="field">
+                    <label for="id_blood_pressure">Blood pressure:</label>
+                    <input type="text" name="blood_pressure" class="input-field" maxlength="5" required id="id_blood_pressure" value="{{patientlog.blood_pressure}}">
+                </div>
+                <div class="field">
+                    <label for="id_height">Height:</label>
+                    <input type="text" name="height" class="input-field" maxlength="5" required id="id_height" value="{{patientlog.height}}">
+                </div>                
+            </div>
+            <div class="data-division">                
+                <div class="field">
+                    <label for="id_additional_notes">Additional notes:</label>
+                    <textarea name="additional_notes" cols="40" rows="10" required id="id_additional_notes" class="input-field long-input-field">{{patientlog.additional_notes}}</textarea>
+                </div>  
+            </div>
+            <div class="data-division">
+                <div class="field">
+                    <label for="current_stage">Send To:</label>
+                    <select name="current_stage" id="id_current_stage" class="input-field" required>
+                        <option value="">--Select--</option>
+                        {% for dpt in departments %}
+                        <option value="{{dpt.id}}">{{dpt}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <input type="submit" class="submit-field" value="Send">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

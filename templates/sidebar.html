@@ -1,0 +1,412 @@
+{% load static %}
+{% load custom_tags %}
+<aside class="side-nav main-sidebar sidebar-dark-primary elevation-4">
+    <!-- <a href="/" class="nav-logo-wrapper">
+        <img src="{% static 'img/logo.png' %}" alt="logo">
+        <h4>Hospillar</h4>
+    </a> -->
+    <a href="/" class="brand-link nav-logo-wrapper">
+        <img src="{% static 'img/logo.png' %}" alt="logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">Hospillar</span>
+    </a>
+    <div class="sidebar">
+        <!-- <div class="form-inline">
+            <div class="input-group" data-widget="sidebar-search">
+                <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+                <div class="input-group-append">
+                    <button class="btn btn-sidebar">
+                        <i class="fas fa-search fa-fw"></i>
+                    </button>
+                </div>
+            </div>
+        </div> -->
+        <nav class="mt-2 pb-4">
+            <ul class="nav nav-pills nav-sidebar flex-column dept-links" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == ''|lower %}active{% endif %}">
+                    <a href="/" class="nav-link">
+                        <i class="nav-icon fas fa-hospital"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+                <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'reception'|lower %}active{% endif %}">
+                    <a href="{% url 'reception' %}" class="nav-link">
+                        <i class="nav-icon fas fa-ambulance"></i>
+                        <p>Reception<i class="fas fa-angle-left right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'reception' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Reception Dashboard</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'new-pat' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add New Patient</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'rec-search-patient' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Search Patient</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'rec-pat-inventory' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Patients Inventory</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Today's Patients</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Appointments</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'cashier'|lower %}active{% endif %}">
+                    <a href="{% url 'cashier' %}" class="nav-link">
+                        <i class="nav-icon bi-cash-coin"></i>
+                        <p>Cashier<i class="fas fa-angle-left right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'cashier' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Cashier Dashboard</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'cash-pending' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Pending Payments</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'cash-cleared' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Daily Cleared Payments</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'cash-uncompleted' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Uncompleted Payments</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'cash-receipts' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Reprint Receipts</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'cash-patient-invoices' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Patient Invoices</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'nurse'|lower %}active{% endif %}">
+                    <a href="{% url 'nurse' %}" class="nav-link">
+                        <i class="nav-icon fas fa-user-nurse"></i>
+                        <p>Nurse<i class="fas fa-angle-left right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'nurse' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Nurse</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'nurse-unattended' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Unattended Patients</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'med'|lower %}active{% endif %}">
+                    <a href="{% url 'med' %}" class="nav-link">
+                        <i class="nav-icon fa fa-user-md fa-1x"></i>
+                        <p>Med<i class="fas fa-angle-left right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'med' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Med</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'med-uncompleted' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Uncompleted Patients</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'med-completed' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Completed Patients</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'pharmacy'|lower %}active{% endif %}">
+                    <a href="{% url 'pharmacy' %}" class="nav-link">
+                        <i class="nav-icon fas fa-capsules fa-1x"></i>
+                        <p>Pharmacy<i class="fas fa-angle-left right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'pharmacy' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Pharmacy</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'pharmacy-uncompleted' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Uncompleted Patients</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'pharmacy-completed' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Completed Patients</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'pharmacy-stocks-page' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Pharmacy Stock Records</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'investigations'|lower %}active{% endif %}">
+                    <a href="{% url 'investigations' %}" class="nav-link">
+                        <i class="nav-icon fas fa-microscope fa-1x"></i>
+                        <p>Lab & Investigations<i class="fas fa-angle-left right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'investigations' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Investigations</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'investigations-uncompleted' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Uncompleted Patients</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'investigations-completed' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Completed Patients</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'imaging_and_radiography'|lower %}active{% endif %}">
+                    <a href="{% url 'imaging_and_radiography' %}" class="nav-link">
+                        <i class="nav-icon fas fa-x-ray"></i>
+                        <p>Radiography & Imaging<i class="fas fa-angle-left right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'imaging_and_radiography' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Radiography & Imaging</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'imaging-uncompleted' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Uncompleted Patients</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'imaging-completed' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Completed Patients</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'dental'|lower %}active{% endif %}">
+                    <a href="{% url 'dental' %}" class="nav-link">
+                        <i class="nav-icon fas fa-tooth"></i>
+                        <p>Dental<i class="fas fa-angle-left right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'dental' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Dental Dashboard</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'dental-uncompleted' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Uncompleted Patients</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'dental-completed' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Completed Patients</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'hr'|lower %}active{% endif %}">
+                    <a href="{% url 'hr' %}" class="nav-link">
+                        <i class="nav-icon fas fa-house-user"></i>
+                        <p>Human Resource<i class="fas fa-angle-left right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'hr' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Human Resource</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'hr-manage-employees' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Manage Employees</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'hr-attendance' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Daily Attendance</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'hr-leave-mgm' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Leave Management</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'hr-payroll' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Payroll</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'hr' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Reports</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'finance'|lower %}active{% endif %}">
+                    <a href="{% url 'finance' %}" class="nav-link">
+                        <i class="nav-icon bi-cash-coin"></i>
+                        <p>Finance<i class="fas fa-angle-left right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'finance' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Finance</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'finance' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Ledgers</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'finance' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Accounts Payable</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'finance' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Accounts Receivable</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'finance' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Asset Management</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'finance' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Expense Management</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'finance' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Reports</p>
+                            </a>
+                        </li>
+                    </ul>
+                    </a>
+                </li>
+                <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'hosp-admin'|lower %}active{% endif %}">
+                    <a href="{% url 'hosp-admin' %}" class="nav-link">
+                        <i class="nav-icon fas fa-cogs"></i>
+                        <p>Admin Panel<i class="fas fa-angle-left right"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{% url 'hosp-admin' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Admin Panel</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'admin-new-account' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Add New User</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'admin-users-list' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Hospital Users</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'admin-settings' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Hospital Settings</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- <li class="nav-item">
+                    <a href="{% url 'login' %}" class="nav-link">
+                        <i class="nav-icon fas fa-th"></i>
+                        <p>Login</p>
+                    </a>
+                </li> -->
+            </ul>
+        </nav>
+        
+    </div>
+</aside>

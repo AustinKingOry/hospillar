@@ -1,0 +1,40 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<div class="main-body">
+    <h3>Human Resource Dept</h3>
+    <div class="reception-links">
+        <a href="{% url 'hr-manage-employees' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">Manage Employees</span>
+        </a>
+        <a href="{% url 'hr-attendance' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">Daily Attendance</span>
+        </a>
+        <a href="{% url 'hr-leave-mgm' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">Leave Management</span>
+        </a>
+        <a href="{% url 'hr-payroll' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">Payroll</span>
+        </a>
+        <a href="{% url 'hr' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">Reports</span>
+        </a>
+    </div>
+</div>
+{% endblock content %}

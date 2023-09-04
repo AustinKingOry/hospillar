@@ -1,0 +1,93 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<main class="main-body">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Payment Record File</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row record-listing-wrapper">
+        <div class="col listing-conts">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-title py-3"><h4>Payment Record File</h4></div>
+                    <table id="main-table" class="d-flex justify-content-center table-responsive table table-hover listing-data-cont table-bordered">
+                        <tbody width="100%">
+                            <tr class="row-items-wrapper">
+                                <td> <b>Employee Name :</b></td>
+                                <td class="py-4"><a href="{% url 'hr-employee-file' payroll_record_file.employee.id %}" target="_blank">{{payroll_record_file.employee}}</a></td>
+                                <td class="row-item py-4"><b>Emp Id :</b></td>
+                                <td class="row-item py-4">{{payroll_record_file.rec_id}}</td>
+                                <td class="row-item py-4"><b>Gender :</b></td>
+                                <td class="row-item py-4">{{payroll_record_file.employee.gender}}</td>
+                            </tr>
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4"><b>Emp Email id :</b></td>
+                                <td class="row-item py-4">{{payroll_record_file.employee.email}}</td>
+                                <td class="row-item py-4"><b>Emp Contact No. :</b></td>
+                                <td class="row-item py-4">{{payroll_record_file.employee.phone}}</td>
+                                <td class="row-item py-4">&nbsp;</td>
+                                <td class="row-item py-4">&nbsp;</td>
+                            </tr>
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4"><b>Payer Account :</b></td>
+                                <td class="row-item py-4">{{payroll_record_file.payer_account}}</td>
+                                <td class="row-item py-4"><b>Payment Period :</b></td>
+                                <td class="row-item py-4">From {{payroll_record_file.from_date}} to {{payroll_record_file.to_date}}</td>
+                                <td class="row-item py-4"><b>Posting Date</b></td>
+                                <td class="row-item py-4">{{payroll_record_file.created}}</td>
+                            </tr>
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4"><b>Description : </b></td>
+                                <td class="row-item py-4" colspan="5">{{payroll_record_file.remarks}}</td>
+                            </tr>
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4"><b>leave Status :</b></td>
+                                <td class="row-item py-4" colspan="5">
+                                    {% if not payroll_record_file.cleared %}
+                                    <span style="color: blue">waiting for approval</span>
+                                    {% elif payroll_record_file.cleared %}
+                                    <span style="color: green">Approved</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4"><b>Admin Remark: </b></td>
+                                <td class="row-item py-4" colspan="5">
+                                    {{payroll_record_file.remarks}}
+                                </td>
+                            </tr>
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4"><b>Admin Action taken date : </b></td>
+                                <td class="row-item py-4" colspan="5">
+                                    {{payroll_record_file.created|date}}
+                                </td>
+                            </tr>
+                            {% if not payroll_record_file.cleared %}
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4">Action:</td>
+                                <td class="row-item py-4" colspan="5">
+                                    <form action="" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="cleared" id="id_cleared" value="True">
+                                        <div class="form-group">
+                                            <input type="submit" class="btn btn-success" value="Approve Transaction">
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

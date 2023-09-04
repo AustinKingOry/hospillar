@@ -1,0 +1,75 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+
+<div class="container">
+    <h3>Edit Employee Details:</h3>
+    <div class="form-container">
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="id_first_name">First name:</label>
+                    <input type="text" class="form-control" name="first_name" maxlength="50" required id="id_first_name" placeholder="First Name" value="{{employee.first_name}}">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="id_middle_name">Middle name:</label>
+                    <input type="text" class="form-control" name="middle_name" maxlength="50" required id="id_middle_name" placeholder="Middle Name" value="{{employee.middle_name}}">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="id_last_name">Last name:</label>
+                    <input type="text" class="form-control" name="last_name" maxlength="50" required id="id_last_name" placeholder="Last Name" value="{{employee.last_name}}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="id_national_id">National id:</label>
+                    <input type="number" class="form-control" name="national_id" required id="id_national_id" placeholder="ID Number" value="{{employee.national_id}}">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="id_phone">Phone:</label>
+                    <input type="text" class="form-control" name="phone" maxlength="15" required id="id_phone" placeholder="+254*********" value="{{employee.phone}}">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="id_gender">Gender:</label>
+                    <input type="text" name="gender" id="id_gender" value="{{employee.gender}}" required placeholder="gender" class="form-control" readonly>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="id_date_of_birth">Date of birth:</label>
+                    <input type="date" class="form-control" name="date_of_birth" required id="id_date_of_birth" placeholder="DOB" value='{{employee.date_of_birth|date:"Y-m-d"}}'> 
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="id_department">Department:</label>
+                    <select name="department" class="form-control custom-select" required id="id_department">
+                        {% for dept in departments %}
+                        {% if dept.id == employee.department.id %}
+                        <option value="{{dept.id}}" selected>{{dept}}</option>
+                        {% else %}
+                        <option value="{{dept.id}}">{{dept}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>  
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="id_residence">Residence:</label>
+                    <input type="text" class="form-control" name="residence" maxlength="50" required id="id_residence" placeholder="Residence" value="{{employee.residence}}">
+                </div>
+            </div>
+            <div class="form-row">                
+                <div class="form-group custom-control custom-switch custom-switch-off-danger custom-switch-on-success col-md-4">
+                    <small id="emailHelp" class="form-text text-muted text-red">This deactivates a user's account.</small>
+                    <input type="checkbox" class="custom-control-input" name="active_status" id="id_active_status" {% if employee.active_status %}checked{% endif %}>
+                    <label class="custom-control-label" for="id_active_status">Active Status</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="Update">
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}

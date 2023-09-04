@@ -1,0 +1,43 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<div class="main-body">
+    <div class="container">
+        <h3>Pharmacy</h3>
+        <div class="form-container">
+            <div class="card">
+                <div class="card-header">
+                    <h4>ADD DRUG</h4>
+                </div>
+                <div class="card-body">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <div class="form-row">
+                                <label for="id_drug_name">Drug name:</label>
+                                <input type="text" name="drug_name" maxlength="100" required class="form-control" id="id_drug_name">
+                            </div>
+                            <div class="form-row">
+                                <label for="id_quantity">Quantity:</label>
+                                <input type="number" name="quantity" value="0" required id="id_quantity" class="form-control">
+                            </div>
+                            <div class="form-row">
+                                <label for="id_buying_price">Buying price:</label>
+                                <input type="number" name="buying_price" required id="id_buying_price" class="form-control">
+                            </div>
+                            <div class="form-row">
+                                <label for="id_selling_price">Selling price:</label>
+                                <input type="number" name="selling_price" required id="id_selling_price" class="form-control">
+                            </div>
+                        </div>                
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-success" value="Add Record">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

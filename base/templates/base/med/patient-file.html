@@ -1,0 +1,150 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<div class="main-body">
+    <div class="form-container">
+        <h3 class="bi-folder2-open"> Med Patient File</h3>
+        <form action="" method="post">
+            {% csrf_token %}            
+            <div class="data-division">
+                <div class="field">
+                    <label for="id_patient_num">Date:</label>
+                    <input type="datetime" class="input-field" id="id_patient_created" value="{{patientlog.created}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_patient_num">Patient Number:</label>
+                    <input type="text" class="input-field" id="id_patient_num" placeholder="ID" value="{{patientlog.patient.patId}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_patient">Patient:</label>
+                    <input type="text" name="patient" class="input-field" id="id_patient" placeholder="Patient Name" value="{{patientlog.patient}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_patient_age">Age:</label>
+                    <input type="text" class="input-field" id="id_patient_age" placeholder="Age" value="{{patientlog.patient.date_of_birth|age}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_patient_gender">Gender:</label>
+                    <input type="text" class="input-field" id="id_patient_gender" placeholder="Gender" value="{{patientlog.patient.gender}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_marital">Marital Status:</label>
+                    <input type="text" class="input-field" id="id_marital" placeholder="Marital Status" value="{{patientlog.patient.marital_status}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_residence">Residence:</label>
+                    <input type="text" class="input-field" id="id_residence" placeholder="Location" value="{{patientlog.patient.residence}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_doctor">Doctor:</label>
+                    <input type="text" name="doctor" class="input-field" id="id_doctor" placeholder="doctor Name" value="{{patientlog.doctor}}" readonly>
+                </div>
+                <div class="field">
+                    <label for="id_payment_mode">Payer:</label>
+                    <input type="text" name="payment_mode" class="input-field" class="input-field" id="id_payment_mode" placeholder="Payer" value="{{patientlog.payment_mode}}" readonly>
+                </div>
+            </div>
+            <div class="data-division">
+                <div class="field">
+                    <label for="id_drug_prc">Prescriptions:</label>
+                    <select class="input-field" id="id_drug_prc" multiple>
+                        {% for prc in prescriptions %}
+                        <option value="{{prc.id}}" selected>{{prc}}</option>
+                        {% endfor %}
+                    </select>
+                    {% if patientlog.active_status and patientlog.created_today %}
+                    <button type="button" class="btn btn-primary" id="prc_{{patientlog.id}}" url="{% url 'edit-prc' patientlog.id %}" onclick="openMiniWindow('prc_{{patientlog.id}}');">Drugs & Prescriptions</button>
+                    {% endif %}
+                </div>
+                <div class="field">
+                    <label for="id_inclusive_service">Inclusive service:</label>
+                    <select class="input-field" id="id_inclusive_service" multiple>
+                        {% for service in services %}
+                        <option value="{{service.id}}" selected>{{service}}</option>
+                        {% endfor %}
+                    </select>
+                    {% if patientlog.active_status and patientlog.created_today %}
+                    <button type="button" class="btn btn-primary" id="ser_{{patientlog.id}}" url="{% url 'edit-services' patientlog.id %}" onclick="openMiniWindow('ser_{{patientlog.id}}');">Services</button>
+                    {% endif %}
+                </div>
+                {% if patientlog.active_status and patientlog.created_today and prev_files|length > 0 %}
+                <div class="field" style="justify-content: stretch;">
+                    <div class="card">
+                        <div class="card-header">
+                            Previous Files
+                        </div>
+                        <div class="card-body d-flex flex-wrap gap-3 align-items-center">
+                            {% for file in prev_files %}
+                            <a href="{% url 'med-patient-file' file.id %}" target="_blank" style="width:fit-content; height: fit-content;" class="btn btn-block bg-gradient-success btn-xs mt-0">{{file.created|date:"Y-m-d"}}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <hr>
+            <div class="data-division">
+                <div class="field">
+                    <label for="id_body_temp">Body temp:</label>
+                    <input type="text" name="body_temp" class="input-field" maxlength="7" required id="id_body_temp" value="{{patientlog.body_temp}}">
+                </div>
+                <div class="field">
+                    <label for="id_weight">Weight:</label>
+                    <input type="text" name="weight" class="input-field" maxlength="5" required id="id_weight" value="{{patientlog.weight}}">
+                </div>
+                <div class="field">
+                    <label for="id_blood_pressure">Blood pressure:</label>
+                    <input type="text" name="blood_pressure" class="input-field" maxlength="5" required id="id_blood_pressure" value="{{patientlog.blood_pressure}}">
+                </div>
+                <div class="field">
+                    <label for="id_height">Height:</label>
+                    <input type="text" name="height" class="input-field" maxlength="5" required id="id_height" value="{{patientlog.height}}">
+                </div>                
+            </div>
+            <div class="data-division">
+                <div class="field">
+                    <label for="id_med_history">Medical history:</label>
+                    <textarea name="med_history" class="input-field long-input-field" cols="40" rows="10" required id="id_med_history">{{patientlog.med_history}}</textarea>
+                </div>
+                <div class="field">
+                    <label for="id_symptoms">Symptoms:</label>
+                    <textarea name="symptoms" class="input-field long-input-field" cols="40" rows="10" required id="id_symptoms">{{patientlog.symptoms}}</textarea>  
+                </div> 
+                <div class="field">
+                    <label for="id_test_results">Tests & Findings:</label>
+                    <textarea name="test_results" class="input-field long-input-field" cols="40" rows="10" required id="id_test_results">{{patientlog.test_results}}</textarea>  
+                </div> 
+                <div class="field">
+                    <label for="id_recommendations">Recommendations:</label>
+                    <textarea name="recommendations" class="input-field long-input-field" cols="40" rows="10" required id="id_recommendations">{{patientlog.recommendations}}</textarea>
+                </div>
+                <div class="field">
+                    <label for="id_impression">Impression:</label>
+                    <textarea name="impression" class="input-field long-input-field" cols="40" rows="10" required id="id_impression">{{patientlog.impression}}</textarea>
+                </div>
+                <div class="field">
+                    <label for="id_additional_notes">Additional notes:</label>
+                    <textarea name="additional_notes" cols="40" rows="10" required id="id_additional_notes" class="input-field long-input-field">{{patientlog.additional_notes}}</textarea>
+                </div>                
+            </div>
+            {% if patientlog.active_status and patientlog.created_today %}
+            <div class="data-division">
+                <div class="field">
+                    <label for="current_stage">Send To:</label>
+                    <select name="current_stage" id="id_current_stage" class="input-field" required>
+                        <option value="">--Select--</option>
+                        {% for dpt in departments %}
+                        <option value="{{dpt.id}}">{{dpt}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <input type="submit" class="submit-field" value="Send">
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock content %}

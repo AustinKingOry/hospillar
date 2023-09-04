@@ -1,0 +1,110 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<head>
+    <style>
+        .main-body{
+            margin: 1em auto !important;
+        }
+        .prc-list{
+            position: relative;
+            padding: 1em;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+        .prc-list .drug-item-list{
+            position: relative;
+            padding: 0.5em;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5em;
+            border-bottom: 1px solid gray;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .prc-list .drug-item-list:nth-child(odd){
+            background-color: var(--bgWhite2);
+        }
+    </style>
+</head>
+<div class="main-body">
+    <div class="container">
+        <div class="card shadow">
+            <div class="card-header">
+                <h3 class="mt-2">Prescriptions</h3>
+            </div>
+            <div class="card-body">
+
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-default">Add Prescription</button>
+                <div class="prc-list">
+                    {% if prescriptions|length > 0 %}
+                    {% for prc in prescriptions %}
+                    <div class="drug-item-list">
+                        <span>{{prc}}</span>
+                        <a href="{% url 'del-prc' prc.id %}" class="btn btn-danger"> Delete</a>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="empty-container">
+                        <span>No prescriptions listed.</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="modal fade z-none" id="modal-default" style="display: none;" aria-hidden="true">
+            <div class="form-container modal-dialog">
+                <form action="" method="post" class="modal-content">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h4>Add Prescription:</h4>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="data-division justify-content-center modal-body">
+                        <div class="field form-group">
+                            <label for="id_drug">Drug:</label>
+                            <select name="drug" required id="id_drug" class="input-field form-select" onchange="fill_drug_price('id_drug','id_price');">
+                                <option value="">---------</option>
+                                {% for drug in drugs %}
+                                <option value="{{drug.id}}" price="{{drug.selling_price}}">{{drug}}</option>
+                                {% endfor %}
+                            </select>   
+                        </div>
+                        <div class="field">
+                            <label for="id_quantity">Quantity:</label>
+                            <input type="number" name="quantity" required id="id_quantity" class="input-field">  
+                        </div>
+                        <div class="field">
+                            <label for="id_price">Price(ksh):</label>
+                            <input type="number" name="price" required id="id_price" class="input-field">  
+                        </div> 
+                        <div class="field">
+                            <label for="id_dosage">Dosage:</label>
+                            <input type="text" name="dosage" maxlength="10" required id="id_dosage" class="input-field">   
+                        </div> 
+                        <div class="field">
+                            <label for="id_frequency">Frequency:</label>
+                            <input type="text" name="frequency" maxlength="5" required id="id_frequency" class="input-field">
+                        </div>
+                    </div>
+                    
+                    <div class="field">
+                        <input type="submit" class="submit-field" value="Add">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

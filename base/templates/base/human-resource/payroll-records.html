@@ -1,0 +1,57 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<div class="main-body">
+    <div class="record-listing-wrapper">
+        <div class="header-sect">
+            <h3>{{page_title}}</h3>
+        </div>
+        <div class="listing-cont">
+            {% if payroll_records|length > 0 %}
+            <table id="main-table-all" class="listing-data-cont table table-bordered table-striped">
+                <thead>
+                    <tr class="info-title-wrapper">
+                        <th class="columnHeader sort-control bi-sort-up"> #</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Employee Name</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Date</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Account</th>
+                        <th class="columnHeader sort-control bi-sort-up"> User</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Amount</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in payroll_records %}
+                    <tr class="row-items-wrapper">
+                        <td class="row-item">{{forloop.counter}}</td>
+                        <td class="row-item">{{item.employee}}</td>
+                        <td class="row-item">{{item.created|date:"Y-m-d"}}</td>
+                        <td class="row-item">{{item.payer_account}}</td>
+                        <td class="row-item">{{item.user}}</td>
+                        <td class="row-item">{{item.amount_payable}}</td>
+                        <td class="row-item">
+                            {% if not item.cleared %}
+                            <span style="color: blue">Pending</span>
+                            {% elif item.cleared %}
+                            <span style="color: green">Approved</span>
+                            {% endif %}
+                        </td>
+                        <td class="row-item"><center><a href="{% url 'payroll-record-file' item.id %}" class="bi-pencil-square"> </a></center></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table> 
+            {% else %}
+            <div class="empty-container">
+                <span>There are no records yet.</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% include 'table-scripts.html' %}
+{% endblock content %}

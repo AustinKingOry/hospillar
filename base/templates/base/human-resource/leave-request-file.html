@@ -1,0 +1,123 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<main class="main-body">
+    <div class="row record-listing-wrapper">
+        <div class="col">
+            <div class="page-title" style="font-size:24px;">Leave Details</div>
+        </div>       
+        <div class="col listing-cont">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-title py-3"><h4>Leave Details</h4></div>
+                    <table id="main-table" class="d-flex justify-content-center table-responsive table table-hover listing-data-cont table-bordered">
+                        <tbody width="100%">
+                            <tr class="row-items-wrapper">
+                                <td> <b>Employee Name :</b></td>
+                                <td class="py-4"><a href="{% url 'hr-employee-file' leave_file.employee.id %}" target="_blank">{{leave_file.employee}}</a></td>
+                                <td class="row-item py-4"><b>Emp Id :</b></td>
+                                <td class="row-item py-4">{{leave_file.leave_id}}</td>
+                                <td class="row-item py-4"><b>Gender :</b></td>
+                                <td class="row-item py-4">{{leave_file.employee.gender}}</td>
+                            </tr>
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4"><b>Emp Email id :</b></td>
+                                <td class="row-item py-4">{{leave_file.employee.email}}</td>
+                                <td class="row-item py-4"><b>Emp Contact No. :</b></td>
+                                <td class="row-item py-4">{{leave_file.employee.phone}}</td>
+                                <td class="row-item py-4">&nbsp;</td>
+                                <td class="row-item py-4">&nbsp;</td>
+                            </tr>
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4"><b>Leave Type :</b></td>
+                                <td class="row-item py-4">{{leave_file.leave_type}}</td>
+                                <td class="row-item py-4"><b>Leave Date . :</b></td>
+                                <td class="row-item py-4">From {{leave_file.start_date}} to {{leave_file.end_date}}</td>
+                                <td class="row-item py-4"><b>Posting Date</b></td>
+                                <td class="row-item py-4">{{leave_file.created}}</td>
+                            </tr>
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4"><b>Employe Leave Description : </b></td>
+                                <td class="row-item py-4" colspan="5">{{leave_file.leave_description}}</td>
+                            </tr>
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4"><b>leave Status :</b></td>
+                                <td class="row-item py-4" colspan="5">
+                                    {% if leave_file.status.status_code == 1 %}
+                                    <span style="color: blue">waiting for approval</span>
+                                    {% elif leave_file.status.status_code == 2 %}
+                                    <span style="color: green">Approved</span>
+                                    {% elif leave_file.status.status_code == 3 %}
+                                    <span style="color: red">Not Approved</span>
+                                    {% elif leave_file.status.status_code == 4 %}
+                                    <span style="color: green">On Session</span>
+                                    {% elif leave_file.status.status_code == 5 %}
+                                    <span style="color: orange">Expired</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4"><b>Admin Remark: </b></td>
+                                <td class="row-item py-4" colspan="5">
+                                    {% if leave_file.status.status_code == 1 %}
+                                    Waiting For Approval
+                                    {% else %}
+                                    {{leave_file.employer_remarks}}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4"><b>Admin Action taken date : </b></td>
+                                <td class="row-item py-4" colspan="5">
+                                    {% if leave_file.status.status_code == 1 %}
+                                    N/A
+                                    {% else %}
+                                    {{leave_file.created|date}}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% if leave_file.status.status_code == 1 %}
+                            <tr class="row-items-wrapper">
+                                <td class="row-item py-4" colspan="5">
+                                    <button class="modal-trigger btn btn-info" data-toggle="modal" data-target="#actionModal">Take&nbsp;Action</button>
+                                    <div id="actionModal" class="modal fade z-none" style="height: 60%" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <form class="modal-dialog" role="document" method="post" action="">
+                                            {% csrf_token %}
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">Take action</h4>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true" class="bi-x"></span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="form-group">
+                                                        <select class="form-control" name="status" required>
+                                                            <option value="">Choose your option</option>
+                                                            {% for stat in leave_stats %}
+                                                            <option value="{{stat.id}}">{{stat}}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <textarea id="id_employer_remarks" class="form-control" name="employer_remarks" placeholder="Description" maxlength="500" length="500" required></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer" style="width:90%">
+                                                    <input type="submit" class="btn btn-primary" name="update" value="Submit">
+                                                </div>
+                                            </div>
+                                        </form>                                        
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

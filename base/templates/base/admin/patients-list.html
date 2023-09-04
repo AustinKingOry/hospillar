@@ -1,0 +1,55 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<div class="main-body">
+    <!-- <h3>Payroll Manager</h3> -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>{{page_title}} <small class="text-blue">{{message}}</small></h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h3 class="card-title fos-unset mb-0 mt-2">Select {{keyword|as_words}} to view</h3>
+                    <div class="card-tools">
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table id="main-table" class="table table-striped">
+                        <caption> <small class="text-blue">{{message}}</small></caption>
+                        <thead>
+                            {% for item_name,item_value in fields.items %}
+                            <th>{{item_name}}</th>
+                            {% endfor %}
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {% for item in records_list %}
+                            <tr>
+                                {% for f in item %}
+                                <td style="vertical-align: middle;">
+                                    {{f}}
+                                </td>
+                                {% if forloop.last %}
+                                <td style="vertical-align: middle;"><a href="{% url 'admin-patient-log-file' item|get_list_item_abs:0 %}" class="bi-pencil-square btn btn-danger"></a></td>
+                                {% endif %}
+                                {% endfor %}   
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% include 'table-scripts.html' %}
+{% endblock content %}

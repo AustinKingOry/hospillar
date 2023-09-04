@@ -1,0 +1,131 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/cashier-styles.css' %}">
+</head>
+<div class="main-body">
+    <h3>Cash Office</h3>
+    <div class="cash-nav-links">
+        <a href="{% url 'cash-pending' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">Pending Payments</span>
+        </a>
+        <a href="{% url 'cash-cleared' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span class="text">Daily Cleared Payments</span>
+        </a>
+        <a href="{% url 'cash-uncompleted' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="bi-receipt"></i>
+            </span>
+            <span class="text">Uncompleted Payments</span>
+        </a>
+        <a href="{% url 'cash-receipts' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="bi-receipt"></i>
+            </span>
+            <span class="text">Reprint Receipts</span>
+        </a>
+        <a href="{% url 'cash-patient-invoices' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="bi-receipt"></i>
+            </span>
+            <span class="text">Patient Invoices</span>
+        </a>
+    </div>
+    <div class="summary-reports-wrapper">
+        <div class="header-sect">
+            <h4>Today's Summary Reports</h4>
+            <!-- {% for item in request.META %}
+            <p>{{item}}</p><br>
+            {% endfor %} -->
+            <!-- {{request.META}} -->
+            
+        </div>
+        <!-- <div class="summary-report-card">
+            <div class="summary-report-card-header">
+                <h3 class="bi-people"> Total Patients</h3>
+            </div>
+            <div class="summary-report-card-body">
+                <span>2</span>
+            </div>
+        </div>
+        <div class="summary-report-card">
+            <div class="summary-report-card-header">
+                <h3>Total Collection</h3>
+            </div>
+            <div class="summary-report-card-body">
+                <span>10,000</span>
+            </div>
+        </div> -->
+        <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+        <canvas id="dailyCollectionBarGraph" style="width:100%;max-width:500px"></canvas>
+        <!-- <div class="default-error" data-text="NO REPORTS"></div> -->
+    </div>
+</div>
+<script>
+var xValues = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+var yValues = [55, 49, 44, 24, 15];
+var barColors = [
+  "#b91d47",
+  "#00aba9",
+  "#2b5797",
+  "#e8c3b9",
+  "#1e7145"
+];
+let chartdataset = {
+    xValues:["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    yValues:[55, 49, 44, 24, 15],
+    barColors:["#b91d47","#00aba9","#2b5797","#e8c3b9","#1e7145"]
+}
+function gen_doughnut_chart(dataset,title,canvasId){
+    let d= dataset
+    new Chart(canvasId, {
+    type: "pie",
+    data: {
+        labels: d.xValues,
+        datasets: [{
+        backgroundColor: d.barColors,
+        data: d.yValues
+        }]
+    },
+    options: {
+        title: {
+        display: true,
+        text: title
+        }
+    }
+    });
+}
+function gen_bar_graph(dataset,title,canvasId){
+    let d= dataset
+    new Chart(canvasId, {
+    type: "bar",
+    data: {
+        labels: d.xValues,
+        datasets: [{
+        backgroundColor: d.barColors,
+        data: d.yValues
+        }]
+    },
+    options: {
+        legend: {display: false},
+        title: {
+        display: true,
+        text: title
+        }
+    }
+    });
+}
+gen_doughnut_chart(chartdataset,"Daily Collections This Week","myChart");
+gen_bar_graph(chartdataset,"Daily Collection Payers","dailyCollectionBarGraph")
+</script>
+{% endblock content %}
+
+

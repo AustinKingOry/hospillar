@@ -1,0 +1,53 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+
+<div class="main-body">
+    <div class="record-listing-wrapper">
+        <div class="header-sect">
+            <h3>Drugs Inventory</h3>
+        </div>
+        <div class="listing-cont">
+            {% if drugs_inventory|length > 0 %}
+            <table id="main-table-all" class="listing-data-cont table table-bordered table-striped">
+                <thead>
+                    <tr class="info-title-wrapper">
+                        <th class="columnHeader sort-control bi-sort-up"> #</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Drug</th>
+                        <th class="columnHeader sort-control bi-sort-up"> In Stock</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Buying Price</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Selling Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in drugs_inventory %}
+                    <tr class="row-items-wrapper">
+                        <td class="row-item">{{forloop.counter}}</td>
+                        <td class="row-item">{{rec.drug_name}}</td>
+                        <td class="row-item">{{rec.quantity}}</td>
+                        <td class="row-item">{{rec.buying_price}}</td>
+                        <td class="row-item">{{rec.selling_price}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Num</th>
+                        <th>Drug</th>
+                        <th>In Stock</th>
+                        <th>Buying Price</th>
+                        <th>Selling Price</th>
+                    </tr>
+                </tfoot>
+            </table>
+            {% else %}
+            <div class="empty-container">
+                <span>There are no drug records yet.</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% include 'table-scripts.html' %}
+{% endblock content %}

@@ -1,0 +1,162 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+<div class="main-body">
+    <div class="container">
+        <!-- <h3>{{request.META}}</h3> -->
+        <div class="stock-list-container">
+            <div class="stock-list-body">
+                <section class="py-3">
+                    <button type="button" class="btn btn-info bi-plus" data-toggle="modal" data-target="#modal-default"> Add New Record</button>
+                    <div class="modal fade z-none" id="modal-default" style="display: none;" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <form method="post" action="" id="drug_entry_form" class="modal-content">
+                                {% csrf_token %}
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Stock Take</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="id_drug" class="col-form-label">Drug:</label>
+                                        <select name="drug" id="id_drug" class="form-control" required onchange="fill_drug_qty('id_drug','id_quantity');fill_drug_price('id_drug','id_buying_price');">
+                                            <option value="">Select</option>
+                                            {% for drug in all_drugs %}
+                                            <option value="{{drug.id}}" qty="{{drug.quantity}}" display_name="{{drug}}" price="{{drug.buying_price}}">{{drug}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="col-form-label" for="id_quantity">In Stock:</label>
+                                        <input class="form-control" name="existing_quantity" id="id_quantity" type="number" required>
+                                        <small id="emailHelp" class="form-text text-muted">Amount that is currently record.</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="col-form-label" for="id_new_quantity">New Quantity:</label>
+                                        <input class="form-control" name="new_quantity" id="id_new_quantity" type="number" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="col-form-label" for="id_expiry_date">Expiry Date:</label>
+                                        <input class="form-control" name="expiry_date" id="id_expiry_date" type="date" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="col-form-label" for="id_buying_price">Buying Price:</label>
+                                        <input type="number" class="form-control" name="buying_price" id="id_buying_price" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <input type="submit" value="Save Record" class="btn btn-success" id="save_record">
+                                </div>
+                            </form>
+                          <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+                </section>
+                <!-- <hr> -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h3 class="m-2 font-weight-bold text-primary" width="50%">STOCKTAKE</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="listing-data-cont table table-borderless" id="main-table-all">
+                                <caption class="caption-top">List Of Records Created Today.</caption>
+                                <thead>
+                                    <tr class="info-title-wrapper">
+                                        <th class="columnHeader sort-control bi-sort-up"> #</th>
+                                        <th class="columnHeader sort-control bi-sort-up"> Name</th>
+                                        <th class="columnHeader sort-control bi-sort-up"> In Stock</th>
+                                        <th class="columnHeader sort-control bi-sort-up"> New Qty</th>
+                                        <th class="columnHeader sort-control bi-sort-up"> Expiry</th>
+                                        <th class="columnHeader sort-control bi-sort-up"> Buying Price</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stock-take-items">
+                                    {% for rec in records_created_today %}
+                                    <tr class="row-items-wrapper">
+                                        <td>{{forloop.counter}}</td>
+                                        <td>{{rec.drug}}</td>
+                                        <td>{{rec.existing_quantity}}</td>
+                                        <td>{{rec.new_quantity}}</td>
+                                        <td>{{rec.expiry_date}}</td>
+                                        <td>{{rec.buying_price}}</td>
+                                        <td><center><button type="button" class="bi-trash btn btn-danger"></button></center></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'table-scripts.html' %}
+<!-- jQuery -->
+<!-- <script src="{% static 'AdminLTE/plugins/jquery/jquery.min.js' %}"></script> -->
+<!-- Bootstrap 4 -->
+<!-- <script src="{% static 'AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script> -->
+<!-- SweetAlert2 -->
+<!-- <script src="{% static 'AdminLTE/plugins/sweetalert2/sweetalert2.min.js' %}"></script> -->
+<!-- Toastr -->
+<!-- <script src="{% static 'AdminLTE/plugins/toastr/toastr.min.js' %}"></script> -->
+<!-- AdminLTE App -->
+<!-- <script src="{% static 'AdminLTE/dist/js/adminlte.min.js' %}"></script> -->
+<!-- AdminLTE for demo purposes -->
+<!-- <script src="{% static 'AdminLTE/dist/js/demo.js' %}"></script> -->
+<!-- Page specific script -->
+<script>
+    document.getElementById('save_record').addEventListener('click',addStockItem);
+    function addStockItem(){
+        const form = document.getElementById('drug_entry_form')
+        const inputs = [...form.querySelectorAll("input, select")];
+        const allValid = inputs.every(input => input.reportValidity());
+        if (allValid){
+            let drug_name,drug_id,cur_qty,new_qty,b_price,expiry_date;
+            inputs.forEach(input=>{
+                let inp_id = input.id;
+                if(inp_id=='id_drug'){
+                    drug_id=input.value;
+                    input.querySelectorAll('option').forEach(opt=>{
+                        if(opt.getAttribute('value')==drug_id){
+                            drug_name = opt.getAttribute('display_name');
+                        }
+                    });
+                }
+                else if(inp_id=='id_quantity'){
+                    cur_qty=input.value;
+                }
+                else if(inp_id=='id_new_quantity'){
+                    new_qty=input.value;
+                }
+                else if(inp_id=='id_buying_price'){
+                    b_price=input.value;
+                }
+                else if(inp_id=='id_expiry_date'){
+                    expiry_date=input.value;
+                }
+            });
+            let rows_count = document.getElementById('stock-take-items').querySelectorAll('.row-items-wrapper').length;
+            let stock_row_temp =
+             `<tr class="row-items-wrapper">
+                <td>${rows_count+=1}</td>
+                <td>${drug_name}</td>
+                <td>${cur_qty}</td>
+                <td>${new_qty}</td>
+                <td>${expiry_date}</td>
+                <td>${b_price}</td>
+                <td><center><button type="button" class="bi-trash btn btn-danger"></button></center></td>
+            </tr>`;
+            document.getElementById('stock-take-items').insertAdjacentHTML('beforeend',stock_row_temp);
+            // inputs.forEach(input => {input.value=null});
+        }
+    }
+</script>
+{% endblock content %}
