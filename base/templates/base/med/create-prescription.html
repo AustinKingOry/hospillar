@@ -39,12 +39,15 @@
 <div class="main-body">
     <div class="container">
         <div class="card shadow">
-            <div class="card-header">
-                <h3 class="mt-2">Prescriptions</h3>
+            <div class="card-header d-flex flex-row">
+                <div class="card-title mt-2 pl-0 col-md-6 text-left"><span class="float-left">Prescriptions</span></div>
+                <div class="card-tools col-md-6">
+                    <button type="button" class="btn btn-primary float-right bi-plus" data-bs-toggle="modal" data-bs-target="#modal-default"> New</button>
+                </div>
             </div>
             <div class="card-body">
 
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-default">Add Prescription</button>
+                
                 <div class="prc-list">
                     {% if prescriptions|length > 0 %}
                     {% for prc in prescriptions %}

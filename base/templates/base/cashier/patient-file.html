@@ -84,7 +84,7 @@
                     {% csrf_token %}
                     <div class="select-field">
                         <label for="id_current_stage">Send To:</label>
-                        <select name="current_stage" id="id_current_stage" class="input-field form-select form-select mb-3" required>
+                        <select name="current_stage" id="id_current_stage" class="input-field form-select mb-3" required>
                             <option value="">--Select--</option>
                             {% for dpt in departments %}
                             <option value="{{dpt.id}}">{{dpt}}</option>

@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group, Permission
 from .forms import PatientForm,MyUserCreationForm,PatientLogForm,NursePatientLogForm,PrescriptionForm,ServiceLogForm,CashPatientLogForm,DebitPayLogForm,DebitPayLogFormInv,PharPatientLogForm,PharNewDrugForm,PharDrugAdjustForm,StockTakeForm,LabPatientLogForm,EmployeeForm,EmployeeEvaluationForm,EmployeeAttendanceForm,EmployeeCheckoutForm,EmployeeLeaveApprovalForm,EmployeeLeaveApplicationForm,PayrollForm,PayrollApprovalForm,DepartmentForm,FacilityForm,FinancialAccountForm,PaymentModeForm,CreditorForm,EmergencyCodeForm,CashOptionForm,ServiceForm,DeleteForm,LeaveStatusForm,LeaveTypeForm,ImagingPatientLogForm,SupplierForm,DentalPatientLogForm,AddUsersToGroupForm,UserUpdateForm,ChangePwdForm,ForgotPwdForm
 
 from .models import User,Department,Patient,PatientLog,PaymentMode,Service,ServiceLog,Drug,PayerScheme,Prescription,DebitPaymentLog,DrugStockTake,EmergencyCode,Facility,LabLog,Employee,EmployeeEvaluation,AttendanceLog,EmployeeLeave,LeaveStatus,LeaveType,Payroll,CashOption,FinancialAccount,ImagingLog,Supplier,DentalLog
-from .functions import createId,createPrescription,createServiceLog,createOp,create_groups,is_admin,user_perms,has_custom_permissions
+from .functions import createId,createPrescription,createServiceLog,createOp,create_groups,is_admin,user_perms,has_custom_permissions,daily_departmental_income,daily_pharmacy_income
 from django.contrib import messages
 from django.db.models import Q
 from django.utils import timezone
@@ -15,8 +15,30 @@ import datetime
 # Create your views here.
 @login_required(login_url="login")
 def home(request):
-    patient_files = PatientLog.objects.all()[0:8]
-    context = {'patient_files':patient_files}
+    collections = {}
+    dpt_collections = {}
+    total_collection = 0
+    current_date = timezone.localdate()
+    today_services = ServiceLog.objects.filter(created__date = current_date)
+    patient_files = PatientLog.objects.filter(created__date=current_date)[0:8]
+    # getting the sum total income for all payers
+    paylogs = DebitPaymentLog.objects.filter(created__date=current_date)
+    for p in paylogs:
+        if not p.payer in collections:
+            collections[str(p.payer)]=p.billable_amount
+            total_collection+=p.billable_amount
+        else:
+            collections[str(p.payer)]+=p.billable_amount
+            total_collection+=p.billable_amount
+    # getting the total income for every department
+    for dpt in Department.objects.filter(handles_patient=True):
+        if not dpt.role in dpt_collections:
+            if not dpt.handles_drugs:
+                dpt_collections[str(dpt.role)]=daily_departmental_income(dpt)
+            else:
+                dpt_collections[str(dpt.role)]=daily_pharmacy_income()
+    page_title = 'Dashboard'
+    context = {'page_title':page_title,'patient_files':patient_files,'today_services':today_services,'collections':collections,'dpt_collections':dpt_collections,'total_collection':total_collection}
     return render(request,'base/home.html',context)
 
 def no_permission(request):
@@ -198,14 +220,14 @@ def rec_new_patient(request):
     payers = PayerScheme.objects.all()
     services = Service.objects.all()
     #getting a list of doctors from users and departments
-    if Department.objects.filter(name='Med').exists():
-        docDptid = Department.objects.get(name='Med').id
+    if Department.objects.filter(role='consultation').exists():
+        docDptid = Department.objects.get(role='consultation').id
     else:
         docDptid = None
     doctors = User.objects.filter(department=docDptid)
     #getting a list of nurses from users and departments
-    if Department.objects.filter(name='Nurse').exists():
-        nurDptid = Department.objects.get(name='Nurse').id
+    if Department.objects.filter(role='nursing').exists():
+        nurDptid = Department.objects.get(role='nursing').id
     else:
         nurDptid = None
     nurses = User.objects.filter(department=nurDptid)
@@ -298,14 +320,14 @@ def rec_show_patient(request,pk):
     services = Service.objects.all()
     form = PatientForm(instance=patient)
     #getting a list of doctors from users and departments
-    if Department.objects.filter(name='Med').exists():
-        docDptid = Department.objects.get(name='Med').id
+    if Department.objects.filter(role='consultation').exists():
+        docDptid = Department.objects.get(role='consultation').id
     else:
         docDptid = None
     doctors = User.objects.filter(department=docDptid)
     #getting a list of nurses from users and departments
-    if Department.objects.filter(name='Nurse').exists():
-        nurDptid = Department.objects.get(name='Nurse').id
+    if Department.objects.filter(role='nursing').exists():
+        nurDptid = Department.objects.get(role='nursing').id
     else:
         nurDptid = None
     nurses = User.objects.filter(department=nurDptid)
@@ -313,10 +335,10 @@ def rec_show_patient(request,pk):
     if request.method == 'POST':
         form = PatientForm(request.POST,instance=patient)
         if form.is_valid():
-            messages.success(request,'Registration was a success!')
             patientFile = form.save(commit=False)
             patientFile.visit_number += 1
             patientFile.save()
+            messages.success(request,'Registration was a success!')
             
             formForwardDpt = request.POST.get('forward-to-dpt')
             if Department.objects.filter(id=formForwardDpt).exists():
@@ -363,8 +385,8 @@ def cashier(request):
 @login_required(login_url="login")
 @permission_required(user_perms('cashier'),login_url='no-permission')
 def cashierPending(request):
-    if Department.objects.filter(name='Finance').exists():
-        docDptid = Department.objects.get(name='Finance').id
+    if Department.objects.filter(role='cashier').exists():
+        docDptid = Department.objects.get(role='cashier').id
     patientLogFiles = []
     current_date = timezone.localdate()
     for patlog in PatientLog.objects.filter(active_status=True,current_stage=docDptid,created__date=current_date):        
@@ -528,6 +550,7 @@ def cashFinalize(request,pk):
                 patientLogFile.cash_cleared=True
             patientLogFile.med_cleared=True
             patientLogFile.active_status=False
+            patientLogFile.total_charge=totalPrice
             patientLogFile.save()
             for p in prescriptions:
                 p.paid=True
@@ -554,8 +577,8 @@ def med(request):
 @login_required(login_url="login")
 @permission_required(user_perms('doctor'),login_url='no-permission')
 def medUncompleted(request):
-    if Department.objects.filter(name='Med').exists():
-        docDptid = Department.objects.get(name='Med').id
+    if Department.objects.filter(role='consultation').exists():
+        docDptid = Department.objects.get(role='consultation').id
     patientLogFiles = []
     for patlog in PatientLog.objects.filter(active_status=True,current_stage=docDptid).order_by('-emergency_code__id','-patlog_id'):        
         if patlog.created_today():
@@ -647,8 +670,8 @@ def medEditServices(request,pk):
 @login_required(login_url="login")
 @permission_required(user_perms('doctor'),login_url='no-permission')
 def medCompleted(request):
-    if Department.objects.filter(name='Med').exists():
-        docDptid = Department.objects.get(name='Med').id
+    if Department.objects.filter(role='consultation').exists():
+        docDptid = Department.objects.get(role='consultation').id
     patientLogFiles = []
     for patlog in PatientLog.objects.filter(med_cleared=True).order_by('-patlog_id'):
         if patlog.created_today():
@@ -697,8 +720,8 @@ def nurse(request):
 @login_required(login_url="login")
 @permission_required(user_perms('nurse'),login_url='no-permission')
 def nurseUncompleted(request):
-    if Department.objects.filter(name='Nurse').exists():
-        nurDptid = Department.objects.get(name='Nurse').id
+    if Department.objects.filter(role='nursing').exists():
+        nurDptid = Department.objects.get(role='nursing').id
     patientLogFiles = []
     for patlog in PatientLog.objects.filter(active_status=True,med_cleared=False,current_stage=nurDptid):        
         if patlog.created_today():
@@ -739,8 +762,8 @@ def pharmacy(request):
 @login_required(login_url="login")
 @permission_required(user_perms('pharmacy'),login_url='no-permission')
 def pharmacyUncompleted(request):
-    if Department.objects.filter(name='Pharmacy').exists():
-        pharDptid = Department.objects.get(name='Pharmacy').id
+    if Department.objects.filter(role='pharmacy').exists():
+        pharDptid = Department.objects.get(role='pharmacy').id
     patientLogFiles = []
     current_date = timezone.localdate()
     for patlog in PatientLog.objects.filter(active_status=True,current_stage=pharDptid,created__date=current_date):        
@@ -753,8 +776,8 @@ def pharmacyUncompleted(request):
 @login_required(login_url="login")
 @permission_required(user_perms('pharmacy'),login_url='no-permission')
 def pharmacyCompleted(request):
-    if Department.objects.filter(name='Pharmacy').exists():
-        pharDptid = Department.objects.get(name='Pharmacy').id
+    if Department.objects.filter(role='pharmacy').exists():
+        pharDptid = Department.objects.get(role='pharmacy').id
     patientLogFiles = []
     current_date = timezone.localdate()
     for patlog in PatientLog.objects.filter(involved_depts=pharDptid,created__date=current_date):        
@@ -1357,8 +1380,8 @@ def imaging_and_radiography(request):
 @login_required(login_url="login")
 @permission_required(user_perms('imaging'),login_url='no-permission')
 def imagingUncompleted(request):
-    if Department.objects.filter(name='Radiography And Imaging').exists():
-        invDptid = Department.objects.get(name='Radiography And Imaging').id
+    if Department.objects.filter(role='imaging').exists():
+        invDptid = Department.objects.get(role='imaging').id
     patientLogFiles = []
     current_date = timezone.localdate()
     for patlog in PatientLog.objects.filter(active_status=True,current_stage=invDptid,created__date=current_date):        
@@ -1371,8 +1394,8 @@ def imagingUncompleted(request):
 @login_required(login_url="login")
 @permission_required(user_perms('imaging'),login_url='no-permission')
 def imagingCompleted(request):
-    if Department.objects.filter(name='Radiography And Imaging').exists():
-        invDptid = Department.objects.get(name='Radiography And Imaging').id
+    if Department.objects.filter(role='imaging').exists():
+        invDptid = Department.objects.get(role='imaging').id
     patientLogFiles = []
     current_date = timezone.localdate()
     for patlog in PatientLog.objects.filter(involved_depts=invDptid,created__date=current_date):        
@@ -1386,8 +1409,8 @@ def imagingCompleted(request):
 @permission_required(user_perms('imaging'),login_url='no-permission')
 def imagingPatFile(request,pk):
     departments = Department.objects.filter(handles_patient=True)
-    if Department.objects.filter(name='Radiography And Imaging').exists():
-        invDptid = Department.objects.get(name='Radiography And Imaging').id
+    if Department.objects.filter(role='imaging').exists():
+        invDptid = Department.objects.get(role='imaging').id
     patientLogFile = PatientLog.objects.get(id=pk)
     # services = patientLogFile.inclusive_service.all()
     tests = patientLogFile.inclusive_service.filter(service__department=invDptid)
@@ -1428,8 +1451,8 @@ def dental(request):
 @login_required(login_url="login")
 @permission_required(user_perms('dental'),login_url='no-permission')
 def dentalUncompleted(request):
-    if Department.objects.filter(name='Dental').exists():
-        invDptid = Department.objects.get(name='Dental').id
+    if Department.objects.filter(role='dental').exists():
+        invDptid = Department.objects.get(role='dental').id
     patientLogFiles = []
     current_date = timezone.localdate()
     for patlog in PatientLog.objects.filter(active_status=True,current_stage=invDptid,created__date=current_date):        
@@ -1442,8 +1465,8 @@ def dentalUncompleted(request):
 @login_required(login_url="login")
 @permission_required(user_perms('dental'),login_url='no-permission')
 def dentalCompleted(request):
-    if Department.objects.filter(name='Dental').exists():
-        invDptid = Department.objects.get(name='Dental').id
+    if Department.objects.filter(role='dental').exists():
+        invDptid = Department.objects.get(role='dental').id
     patientLogFiles = []
     current_date = timezone.localdate()
     for patlog in PatientLog.objects.filter(involved_depts=invDptid,created__date=current_date):        
@@ -1457,8 +1480,8 @@ def dentalCompleted(request):
 @permission_required(user_perms('dental'),login_url='no-permission')
 def dentalPatFile(request,pk):
     departments = Department.objects.filter(handles_patient=True)
-    if Department.objects.filter(name='Dental').exists():
-        invDptid = Department.objects.get(name='Dental').id
+    if Department.objects.filter(role='dental').exists():
+        invDptid = Department.objects.get(role='dental').id
     patientLogFile = PatientLog.objects.get(id=pk)
     procedures = patientLogFile.inclusive_service.filter(service__department=invDptid)
     prescriptions = patientLogFile.prescription.all()
@@ -1498,8 +1521,8 @@ def investigations(request):
 @login_required(login_url="login")
 @permission_required(user_perms('lab'),login_url='no-permission')
 def investigationsUncompleted(request):
-    if Department.objects.filter(name='Investigations').exists():
-        invDptid = Department.objects.get(name='Investigations').id
+    if Department.objects.filter(role='laboratory').exists():
+        invDptid = Department.objects.get(role='laboratory').id
     patientLogFiles = []
     current_date = timezone.localdate()
     for patlog in PatientLog.objects.filter(active_status=True,current_stage=invDptid,created__date=current_date):        
@@ -1512,8 +1535,8 @@ def investigationsUncompleted(request):
 @login_required(login_url="login")
 @permission_required(user_perms('lab'),login_url='no-permission')
 def investigationsCompleted(request):
-    if Department.objects.filter(name='Investigations').exists():
-        invDptid = Department.objects.get(name='Investigations').id
+    if Department.objects.filter(role='laboratory').exists():
+        invDptid = Department.objects.get(role='laboratory').id
     patientLogFiles = []
     current_date = timezone.localdate()
     for patlog in PatientLog.objects.filter(involved_depts=invDptid,created__date=current_date):        
@@ -1527,8 +1550,8 @@ def investigationsCompleted(request):
 @permission_required(user_perms('lab'),login_url='no-permission')
 def investigationsPatFile(request,pk):
     departments = Department.objects.filter(handles_patient=True)
-    if Department.objects.filter(name='Investigations').exists():
-        invDptid = Department.objects.get(name='Investigations').id
+    if Department.objects.filter(role='laboratory').exists():
+        invDptid = Department.objects.get(role='laboratory').id
     patientLogFile = PatientLog.objects.get(id=pk)
     # services = patientLogFile.inclusive_service.all()
     tests = patientLogFile.inclusive_service.filter(service__department=invDptid)
@@ -1762,7 +1785,6 @@ def settingsListingEmergencyCodes(request):
     context = {'page_title':page_title,'records_list':records_list,'keyword':keyword,'fields':fields}
     return render(request,'base/hosp-settings/settings-listings.html',context)
 
-
 @login_required(login_url="login")
 @user_passes_test(is_admin,login_url="login")
 def settingsEdit(request,table,pk):
@@ -1771,62 +1793,74 @@ def settingsEdit(request,table,pk):
     form_inst=None
     keyword=''
     deletable = True
+    after_submit = 'admin-settings'
     if t=='leave_type':
         obj = LeaveType.objects.get(id=pk)
         form = LeaveTypeForm(instance=obj)
         form_inst = LeaveTypeForm
         keyword = t
+        after_submit = 'admin-settings-leave-types'
     elif t=='leave_status':
         obj = LeaveStatus.objects.get(id=pk)
         form = LeaveStatusForm(instance=obj)
         form_inst = LeaveStatusForm
         keyword = t
+        after_submit = 'admin-settings-leave-statuses'
     elif t=='department':
         obj = Department.objects.get(id=pk)
         form = DepartmentForm(instance=obj)
         form_inst = DepartmentForm
         keyword = t
         deletable = False
+        after_submit = 'admin-settings-departments'
     elif t=='service':
         obj = Service.objects.get(id=pk)
         form = ServiceForm(instance=obj)
         form_inst = ServiceForm
         keyword = t
+        after_submit = 'admin-settings-services'
     elif t=='facility':
         obj = Facility.objects.get(id=pk)
         form = FacilityForm(instance=obj)
         form_inst = FacilityForm
         keyword = t
+        after_submit = 'admin-settings-facilities'
     elif t=='creditor':
         obj = PayerScheme.objects.get(id=pk)
         form = CreditorForm(instance=obj)
         form_inst = CreditorForm
         keyword = t
+        after_submit = 'admin-settings-creditors'
     elif t=='payment_mode':
         obj = PaymentMode.objects.get(id=pk)
         form = PaymentModeForm(instance=obj)
         form_inst = PaymentModeForm
         keyword = t
+        after_submit = 'admin-settings-payment-modes'
     elif t=='financial_account':
         obj = FinancialAccount.objects.get(id=pk)
         form = FinancialAccountForm(instance=obj)
         form_inst = FinancialAccountForm
         keyword = t
+        after_submit = 'admin-settings-financial-accounts'
     elif t=='cash_option':
         obj = CashOption.objects.get(id=pk)
         form = CashOptionForm(instance=obj)
         form_inst = CashOptionForm
         keyword = t
+        after_submit = 'admin-settings-cash-options'
     elif t=='emergency_code':
         obj = EmergencyCode.objects.get(id=pk)
         form = EmergencyCodeForm(instance=obj)
         form_inst = EmergencyCodeForm
         keyword = t
+        after_submit = 'admin-settings-emergency-codes'
     elif t=='supplier':
         obj = Supplier.objects.get(id=pk)
         form = SupplierForm(instance=obj)
         form_inst = SupplierForm
         keyword = t
+        after_submit = 'admin-settings-suppliers'
     else:
         return HttpResponse('Check your request and try again')
     
@@ -1835,7 +1869,7 @@ def settingsEdit(request,table,pk):
         if form.is_valid():
             form.save()
             messages.success(request,str(obj)+' has been updated successfully.')
-            return redirect(request.META['HTTP_REFERER'])
+            return redirect(after_submit)
         else:
             messages.error(request,form.errors)
             

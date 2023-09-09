@@ -32,9 +32,37 @@ class Facility(models.Model):
         return self.rec_id
     
 class Department(models.Model):
+    role_0 = 'null'
+    role_1 = 'consultation'
+    role_2 = 'pharmacy'
+    role_3 = 'nursing'
+    role_4 = 'cashier'
+    role_5 = 'hr'
+    role_6 = 'laboratory'
+    role_7 = 'imaging'
+    role_8 = 'dental'
+    role_9 = 'I.T'
+    role_10 = 'sales'
+    role_11 = 'finance'
+    departmental_roles = [
+        (role_0,'None'),
+        (role_1,'consultation'),
+        (role_2,'pharmacy'),
+        (role_3,'nursing'),
+        (role_4,'cashier'),
+        (role_5,'human resource'),
+        (role_6,'laboratory'),
+        (role_7,'sonography & imaging'),
+        (role_8,'dental services'),
+        (role_9,'I.T'),
+        (role_10,'sales & marketing'),
+        (role_11,'finance'),
+    ]
     rec_id=models.CharField(max_length=10,unique=True)
     name = models.CharField(max_length=50,null=False,default='Doctor')
     handles_patient = models.BooleanField(default=False)
+    handles_drugs = models.BooleanField(default=False,help_text="This should only be activated for pharmacy.")
+    role = models.CharField(max_length=50,choices=departmental_roles,default=role_0)
     created = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -150,13 +178,19 @@ class PayerScheme(models.Model):
         return self.rec_id
     
 class Patient(models.Model):
+    adm_1 = 'OUTPATIENT'
+    adm_2 = 'INPATIENT'
+    admission_choices = [
+        (adm_1,'outpatient'),
+        (adm_2,'inpatient'),
+    ]
     patId = models.CharField(max_length=10,null=True,unique=True)
     op_number = models.CharField(max_length=10,null=True,unique=True)
     first_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     national_id = models.IntegerField(blank=False,null=False,default=00000000)
-    admission_category = models.CharField(max_length=15,null=False,default='OP')
+    admission_category = models.CharField(max_length=15,null=False,choices=admission_choices,default=adm_1)
     phone = models.CharField(max_length=15,null=False)
     gender = models.CharField(max_length=10)
     date_of_birth = models.DateField(null=False)
@@ -226,17 +260,14 @@ class ServiceLog(models.Model):
 
 
 class PatientLog(models.Model):
-    status_1 = 'pending'
-    status_2 = 'in progress'
-    status_3 = 'completed'
-    status_4 = 'on hold'
-    status_choices = [
-        (status_1,'pending'),
-        (status_2,'in progress'),
-        (status_3,'completed'),
-        (status_4,'on hold'),
+    adm_1 = 'OUTPATIENT'
+    adm_2 = 'INPATIENT'
+    admission_choices = [
+        (adm_1,'outpatient'),
+        (adm_2,'inpatient'),
     ]
     patlog_id = models.CharField(max_length=10,unique=True)
+    admission_category = models.CharField(max_length=15,null=False,choices=admission_choices,default=adm_1)
     patient = models.ForeignKey(Patient,on_delete=models.CASCADE,null=False)
     doctor = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
     emergency_code = models.ForeignKey(EmergencyCode,on_delete=models.SET_NULL,null=True,blank=True)
@@ -256,6 +287,7 @@ class PatientLog(models.Model):
     current_stage = models.ForeignKey(Department,on_delete=models.SET_NULL,null=True,related_name="cur_dept")
     active_status = models.BooleanField(default=False)
     involved_depts = models.ManyToManyField(Department,blank=True)
+    total_charge = models.FloatField(default=0,null=True,blank=True)
     med_cleared = models.BooleanField(default=False)
     cash_cleared = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)

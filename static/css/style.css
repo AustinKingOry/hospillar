@@ -197,9 +197,9 @@ code{
 .modal-backdrop.fade.show{
     z-index: unset !important;
 }
-.main-sidebar,.main-header{
+/* .main-sidebar,.main-header{
     z-index: unset;
-}
+} */
 .default-error {
     color: #5a5c69;
     font-size: 7rem;
@@ -417,14 +417,14 @@ nav img,.user-img{
     top: 0.8em;
 }
 .sidebar-mini.sidebar-collapse .main-sidebar, .sidebar-mini.sidebar-collapse .main-sidebar::before {
-    width: 6.6rem;
+    width: 4.6rem;
 }
 .sidebar-collapse.sidebar-mini .main-sidebar .nav-sidebar .nav-link, .sidebar-collapse.sidebar-mini-md .main-sidebar .nav-sidebar .nav-link, .sidebar-collapse.sidebar-mini-xs .main-sidebar .nav-sidebar .nav-link {
     width: 4.6rem;
 }
 @media (min-width: 992px){
     .sidebar-mini.sidebar-collapse .content-wrapper, .sidebar-mini.sidebar-collapse .main-footer, .sidebar-mini.sidebar-collapse .main-header {
-        margin-left: 6.6rem!important;
+        margin-left: 4.6rem!important;
     }
 }
 /* END OF sidebar styles from AdminLTE */
@@ -755,4 +755,11 @@ nav img,.user-img{
 }
 .auto-inputs-wrapper input:focus,.auto-inputs-wrapper select:focus,.auto-inputs-wrapper textarea:focus{
     box-shadow: 0 0 7px var(--bgBlue);
+}
+@media (max-width: 480px) {
+	.fill-480{
+		width: 96%;
+		margin-left: auto;
+		margin-right: auto;
+	}
 }

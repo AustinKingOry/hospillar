@@ -9,6 +9,7 @@ import re
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sessions.models import Session
+from django.utils import timezone
 
 def encrypt_text(key, text):
     cipher = AES.new(key, AES.MODE_ECB)
@@ -258,3 +259,20 @@ def has_custom_permissions(request, required_permissions):
     print(request.session.get('cached_permissions'))
     return all(permission in cached_permissions for permission in required_permissions)
 
+def daily_departmental_income(dpt):
+    current_date = timezone.localdate()
+    items = ServiceLog.objects.filter(created__date = current_date,service__department = dpt)
+    department_total=0
+    #geting total service and procedure income from departments
+    for s in items:
+        department_total+=s.total_amount
+    return department_total
+
+def daily_pharmacy_income():
+    current_date = timezone.localdate()
+    prescriptions = Prescription.objects.filter(created__date = current_date)
+    pharmacy_amount = 0
+    #geting total from drugs income
+    for p in prescriptions:
+        pharmacy_amount+=p.total_amount
+    return pharmacy_amount

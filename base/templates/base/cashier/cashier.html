@@ -64,68 +64,9 @@
                 <span>10,000</span>
             </div>
         </div> -->
-        <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
-        <canvas id="dailyCollectionBarGraph" style="width:100%;max-width:500px"></canvas>
         <!-- <div class="default-error" data-text="NO REPORTS"></div> -->
     </div>
 </div>
-<script>
-var xValues = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-var yValues = [55, 49, 44, 24, 15];
-var barColors = [
-  "#b91d47",
-  "#00aba9",
-  "#2b5797",
-  "#e8c3b9",
-  "#1e7145"
-];
-let chartdataset = {
-    xValues:["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    yValues:[55, 49, 44, 24, 15],
-    barColors:["#b91d47","#00aba9","#2b5797","#e8c3b9","#1e7145"]
-}
-function gen_doughnut_chart(dataset,title,canvasId){
-    let d= dataset
-    new Chart(canvasId, {
-    type: "pie",
-    data: {
-        labels: d.xValues,
-        datasets: [{
-        backgroundColor: d.barColors,
-        data: d.yValues
-        }]
-    },
-    options: {
-        title: {
-        display: true,
-        text: title
-        }
-    }
-    });
-}
-function gen_bar_graph(dataset,title,canvasId){
-    let d= dataset
-    new Chart(canvasId, {
-    type: "bar",
-    data: {
-        labels: d.xValues,
-        datasets: [{
-        backgroundColor: d.barColors,
-        data: d.yValues
-        }]
-    },
-    options: {
-        legend: {display: false},
-        title: {
-        display: true,
-        text: title
-        }
-    }
-    });
-}
-gen_doughnut_chart(chartdataset,"Daily Collections This Week","myChart");
-gen_bar_graph(chartdataset,"Daily Collection Payers","dailyCollectionBarGraph")
-</script>
 {% endblock content %}
 
 

@@ -9,7 +9,7 @@
     {% if not hide_skeleton %}
     <!-- Theme styles -->
     <!-- <link rel="stylesheet" href="{% static 'css/sb-admin-2.css' %}"> -->
-    <link rel="stylesheet" href="{% static 'AdminLTE/dist/css/adminlte.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/AdminLTE/dist/css/adminlte.min.css' %}">
     {% endif %}
     <!-- jquery files/links -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -53,6 +53,23 @@
     
     <!-- local css  -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .btn-icon-split{
+            padding: 0;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: stretch;
+            justify-content: center;
+        }
+        .btn-icon-split .icon{
+            padding: 0.5em;
+            background-color: rgba(77, 77, 82, 0.447);
+        }
+        .btn-icon-split .text{
+            margin: auto;
+            padding: 0.5em;
+        }
+    </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     {% if messages %}
