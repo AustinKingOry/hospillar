@@ -3,9 +3,9 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required,user_passes_test,permission_required
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.models import Group, Permission
-from .forms import PatientForm,MyUserCreationForm,PatientLogForm,NursePatientLogForm,PrescriptionForm,ServiceLogForm,CashPatientLogForm,DebitPayLogForm,DebitPayLogFormInv,PharPatientLogForm,PharNewDrugForm,PharDrugAdjustForm,StockTakeForm,LabPatientLogForm,EmployeeForm,EmployeeEvaluationForm,EmployeeAttendanceForm,EmployeeCheckoutForm,EmployeeLeaveApprovalForm,EmployeeLeaveApplicationForm,PayrollForm,PayrollApprovalForm,DepartmentForm,FacilityForm,FinancialAccountForm,PaymentModeForm,CreditorForm,EmergencyCodeForm,CashOptionForm,ServiceForm,DeleteForm,LeaveStatusForm,LeaveTypeForm,ImagingPatientLogForm,SupplierForm,DentalPatientLogForm,AddUsersToGroupForm,UserUpdateForm,ChangePwdForm,ForgotPwdForm,AppointmentForm,AppointmentChangeForm
+from .forms import PatientForm,MyUserCreationForm,PatientLogForm,NursePatientLogForm,PrescriptionForm,ServiceLogForm,CashPatientLogForm,DebitPayLogForm,DebitPayLogFormInv,PharPatientLogForm,PharNewDrugForm,PharDrugAdjustForm,StockTakeForm,LabPatientLogForm,EmployeeForm,EmployeeEvaluationForm,EmployeeAttendanceForm,EmployeeCheckoutForm,EmployeeLeaveApprovalForm,EmployeeLeaveApplicationForm,PayrollForm,PayrollApprovalForm,DepartmentForm,FacilityForm,FinancialAccountForm,PaymentModeForm,CreditorForm,EmergencyCodeForm,CashOptionForm,ServiceForm,DeleteForm,LeaveStatusForm,LeaveTypeForm,ImagingPatientLogForm,SupplierForm,DentalPatientLogForm,AddUsersToGroupForm,UserUpdateForm,ChangePwdForm,ForgotPwdForm,AppointmentForm,AppointmentChangeForm,ExpenseForm,ExpenseCategoryForm
 
-from .models import User,Department,Patient,PatientLog,PaymentMode,Service,ServiceLog,Drug,PayerScheme,Prescription,DebitPaymentLog,DrugStockTake,EmergencyCode,Facility,LabLog,Employee,EmployeeEvaluation,AttendanceLog,EmployeeLeave,LeaveStatus,LeaveType,Payroll,CashOption,FinancialAccount,ImagingLog,Supplier,DentalLog,Appointment
+from .models import User,Department,Patient,PatientLog,PaymentMode,Service,ServiceLog,Drug,PayerScheme,Prescription,DebitPaymentLog,DrugStockTake,EmergencyCode,Facility,LabLog,Employee,EmployeeEvaluation,AttendanceLog,EmployeeLeave,LeaveStatus,LeaveType,Payroll,CashOption,FinancialAccount,ImagingLog,Supplier,DentalLog,Appointment,ExpenseCategory,Expense
 from .functions import createId,createPrescription,createServiceLog,createOp,create_groups,is_admin,user_perms,has_custom_permissions,daily_departmental_income,daily_pharmacy_income
 from django.contrib import messages
 from django.db.models import Q
@@ -21,6 +21,11 @@ def home(request):
     current_date = timezone.localdate()
     today_services = ServiceLog.objects.filter(created__date = current_date)
     patient_files = PatientLog.objects.filter(created__date=current_date)[0:20]
+    all_appointments = Appointment.objects.filter(cleared=False,appointment_date=current_date).order_by('name')
+    expenses = Expense.objects.filter(created__date=current_date)
+    total_expenses = 0
+    for e in expenses:
+        total_expenses += e.amount
     # getting the sum total income for all payers
     paylogs = DebitPaymentLog.objects.filter(created__date=current_date)
     for p in paylogs:
@@ -38,7 +43,7 @@ def home(request):
             else:
                 dpt_collections[str(dpt.role)]=daily_pharmacy_income()
     page_title = 'Dashboard'
-    context = {'page_title':page_title,'patient_files':patient_files,'today_services':today_services,'collections':collections,'dpt_collections':dpt_collections,'total_collection':total_collection}
+    context = {'page_title':page_title,'total_expenses':total_expenses,'patient_files':patient_files,'today_services':today_services,'collections':collections,'dpt_collections':dpt_collections,'total_collection':total_collection,'appointments':all_appointments}
     return render(request,'base/home.html',context)
 
 def no_permission(request):
@@ -523,6 +528,29 @@ def cashierReceiptsList(request):
     page_title = 'Reprint Receipts'
     context = {'page_title':page_title,'paymentlogs':paymentLogFiles}
     return render(request,'base/cashier/cash-receipts-list.html',context)
+
+@login_required(login_url="login")
+@permission_required(user_perms('cashier'),login_url='no-permission')
+def cashierExpenses(request):
+    current_date = timezone.localdate()
+    all_expenses = Expense.objects.filter(created__date=current_date)
+    form = ExpenseForm()
+    if request.method == 'POST':
+        form = ExpenseForm(request.POST)
+        if form.is_valid():
+            exp = form.save(commit=False)
+            exp.rec_id=createId(Expense,Expense.rec_id,'EXP')
+            exp.added_by = request.user
+            exp.save()
+            messages.success(request,'Expense has been added successfully.')
+            return redirect('cash-petty-cash')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
+    page_title = 'Petty Cash Account'
+    context = {'page_title':page_title,'all_expenses':all_expenses,'form':form}
+    return render(request,'base/cashier/petty-cash.html',context)
 
 @login_required(login_url="login")
 @permission_required(user_perms('cashier'),login_url='no-permission')
@@ -1330,6 +1358,20 @@ def finance(request):
 
 @login_required(login_url="login")
 @permission_required(user_perms('finance'),login_url='no-permission')
+def finance_dpt_collections(request):
+    dpt_collections = {}
+    for dpt in Department.objects.filter(handles_patient=True):
+        if not dpt.role in dpt_collections:
+            if not dpt.handles_drugs:
+                dpt_collections[str(dpt.role)]=daily_departmental_income(dpt)
+            else:
+                dpt_collections[str(dpt.role)]=daily_pharmacy_income()
+    page_title = 'Departmental Collections'
+    context = {'page_title':page_title,'collections':dpt_collections}
+    return render(request,'base/finance/dept-collections.html',context)
+
+@login_required(login_url="login")
+@permission_required(user_perms('finance'),login_url='no-permission')
 def financeDailyCollection(request):
     total_amount=[0,0,0]
     total_cash = [0,0,0]
@@ -1836,6 +1878,23 @@ def settingsListingCashOptions(request):
 
 @login_required(login_url="login")
 @user_passes_test(is_admin,login_url="login")
+def settingsListingPettyCash(request):
+    all_objs = ExpenseCategory.objects.all()
+    records_list=[] 
+    for s in all_objs:
+        sub=[]
+        sub.append(s.id)
+        sub.append(s.name)
+        sub.append(s.description)
+        records_list.append(sub)
+    page_title = 'Edit Petty Cash Accounts'
+    keyword = 'petty_cash'
+    fields = {'#':'id','Name':'name','Description':'description'}
+    context = {'page_title':page_title,'records_list':records_list,'keyword':keyword,'fields':fields}
+    return render(request,'base/hosp-settings/settings-listings.html',context)
+
+@login_required(login_url="login")
+@user_passes_test(is_admin,login_url="login")
 def settingsListingSuppliers(request):
     all_objs = Supplier.objects.all()
     records_list=[] 
@@ -1951,6 +2010,12 @@ def settingsEdit(request,table,pk):
         form_inst = CashOptionForm
         keyword = t
         after_submit = 'admin-settings-cash-options'
+    elif t=='petty_cash':
+        obj=ExpenseCategory.objects.get(id=pk)
+        form = ExpenseCategoryForm(instance=obj)
+        form_inst = ExpenseCategoryForm
+        keyword = t
+        after_submit = 'admin-settings-petty-cash'
     elif t=='emergency_code':
         obj = EmergencyCode.objects.get(id=pk)
         form = EmergencyCodeForm(instance=obj)
@@ -1988,61 +2053,79 @@ def settingsAdd(request,table):
     obj=None
     form_inst=None
     keyword=''
+    after_submit = 'admin-settings'
     if t=='leave_type':
         obj = LeaveType
         form = LeaveTypeForm()
         form_inst = LeaveTypeForm
         keyword = t
+        after_submit = 'admin-settings-leave-types'
     elif t=='leave_status':
         obj = LeaveStatus
         form = LeaveStatusForm()
         form_inst = LeaveStatusForm
         keyword = t
+        after_submit = 'admin-settings-leave-statuses'
     elif t=='department':
         obj=Department
         form = DepartmentForm()
         form_inst = DepartmentForm
         keyword = t
+        after_submit = 'admin-settings-departments'
     elif t=='service':
         obj=Service
         form = ServiceForm()
         form_inst = ServiceForm
         keyword = t
+        after_submit = 'admin-settings-services'
     elif t=='facility':
         obj=Facility
         form = FacilityForm()
         form_inst = FacilityForm
         keyword = t
+        after_submit = 'admin-settings-facilities'
     elif t=='creditor':
         obj=PayerScheme
         form = CreditorForm()
         form_inst = CreditorForm
         keyword = t
+        after_submit = 'admin-settings-creditors'
     elif t=='payment_mode':
         obj=PaymentMode
         form = PaymentModeForm()
         form_inst = PaymentModeForm
         keyword = t
+        after_submit = 'admin-settings-payment-modes'
     elif t=='financial_account':
         obj=FinancialAccount
         form = FinancialAccountForm()
         form_inst = FinancialAccountForm
         keyword = t
+        after_submit = 'admin-settings-financial-accounts'
     elif t=='cash_option':
         obj=CashOption
         form = CashOptionForm()
         form_inst = CashOptionForm
         keyword = t
+        after_submit = 'admin-settings-cash-options'
+    elif t=='petty_cash':
+        obj=ExpenseCategory
+        form = ExpenseCategoryForm()
+        form_inst = ExpenseCategoryForm
+        keyword = t
+        after_submit = 'admin-settings-petty-cash'
     elif t=='emergency_code':
         obj=EmergencyCode
         form = EmergencyCodeForm()
         form_inst = EmergencyCodeForm
         keyword = t
+        after_submit = 'admin-settings-emergency-codes'
     elif t=='supplier':
         obj = Supplier
         form = SupplierForm()
         form_inst = SupplierForm
         keyword = t
+        after_submit = 'admin-settings-suppliers'
     else:
         return HttpResponse('Check your request and try again')
     
@@ -2054,7 +2137,7 @@ def settingsAdd(request,table):
             rec_form.added_by=request.user
             rec_form.save()
             messages.success(request,str(rec_form)+' has been saved successfully.')
-            return redirect(request.META['HTTP_REFERER'])
+            return redirect(after_submit)
         else:
             for field, errors in form.errors.items():
                 for error in errors:
@@ -2071,42 +2154,57 @@ def settingsDelete(request,table,pk):
     form_inst=None
     keyword=''
     ok = True
+    after_submit = 'admin-settings'
     if t=='leave_type':
         obj = LeaveType.objects.get(id=pk)
         keyword = t
+        after_submit = 'admin-settings-leave-types'
     elif t=='leave_status':
         obj = LeaveStatus.objects.get(id=pk)
         keyword = t
+        after_submit = 'admin-settings-leave-statuses'
     elif t=='department':
         obj = Department.objects.get(id=pk)
         keyword = t
         ok = False
         messages.error(request,'Existing departments cannot be deleted. Please try renaming or deactivating instead.')
-        return redirect(request.META['HTTP_REFERER'])
+        after_submit = 'admin-settings-departments'
     elif t=='service':
         obj = Service.objects.get(id=pk)
         keyword = t
+        after_submit = 'admin-settings-services'
     elif t=='facility':
         obj = Facility.objects.get(id=pk)
         keyword = t
+        after_submit = 'admin-settings-facilities'
     elif t=='creditor':
         obj = PayerScheme.objects.get(id=pk)
         keyword = t
+        after_submit = 'admin-settings-creditors'
     elif t=='payment_mode':
         obj = PaymentMode.objects.get(id=pk)
         keyword = t
+        after_submit = 'admin-settings-payment-modes'
     elif t=='financial_account':
         obj = FinancialAccount.objects.get(id=pk)
         keyword = t
+        after_submit = 'admin-settings-financial-accounts'
     elif t=='cash_option':
         obj = CashOption.objects.get(id=pk)
         keyword = t
+        after_submit = 'admin-settings-cash-options'
+    elif t=='petty_cash':
+        obj = ExpenseCategory.objects.get(id=pk)
+        keyword = t
+        after_submit = 'admin-settings-petty-cash'
     elif t=='emergency_code':
         obj = EmergencyCode.objects.get(id=pk)
         keyword = t
+        after_submit = 'admin-settings-emergency-codes'
     elif t=='supplier':
         obj = Supplier.objects.get(id=pk)
         keyword = t
+        after_submit = 'admin-settings-suppliers'
     else:
         return HttpResponse('Check your request and try again')
     
@@ -2116,7 +2214,7 @@ def settingsDelete(request,table,pk):
             obj_name = str(obj)
             obj.delete()
             messages.success(request,obj_name+' has been deleted successfully.')
-            return redirect(request.META['HTTP_REFERER'])
+            return redirect(after_submit)
         else:
             for field, errors in form.errors.items():
                 for error in errors:

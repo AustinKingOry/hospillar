@@ -38,33 +38,12 @@
             </span>
             <span class="text">Patient Invoices</span>
         </a>
-    </div>
-    <div class="summary-reports-wrapper">
-        <div class="header-sect">
-            <h4>Today's Summary Reports</h4>
-            <!-- {% for item in request.META %}
-            <p>{{item}}</p><br>
-            {% endfor %} -->
-            <!-- {{request.META}} -->
-            
-        </div>
-        <!-- <div class="summary-report-card">
-            <div class="summary-report-card-header">
-                <h3 class="bi-people"> Total Patients</h3>
-            </div>
-            <div class="summary-report-card-body">
-                <span>2</span>
-            </div>
-        </div>
-        <div class="summary-report-card">
-            <div class="summary-report-card-header">
-                <h3>Total Collection</h3>
-            </div>
-            <div class="summary-report-card-body">
-                <span>10,000</span>
-            </div>
-        </div> -->
-        <!-- <div class="default-error" data-text="NO REPORTS"></div> -->
+        <a href="{% url 'cash-petty-cash' %}" class="btn btn-info btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="bi-receipt"></i>
+            </span>
+            <span class="text">Petty Cash</span>
+        </a>
     </div>
 </div>
 {% endblock content %}

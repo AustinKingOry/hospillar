@@ -29,55 +29,45 @@
                 </div>
                 <div class="card-body">
                     <div class="admin-links">
-                        <h4 class="mt-4 mb-2">Accounting</h4>
+                        <h4 class="mt-4 mb-2">Settings</h4>
                         <div class="row">
                             <div class="col-md-3 col-sm-6 col-12">
-                                <a href="{% url 'finance' %}" class="info-box shadow">
-                                    <span class="info-box-icon bg-primary"><i class="fas fa-receipt"></i></span>
+                                <a href="{% url 'admin-settings-creditors' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-primary"><i class="bi-cash-coin"></i></span>
                     
                                     <div class="info-box-content">
-                                        <span class="info-box-text">Ledgers</span>
-                                        <!-- <span class="info-box-number">Info</span> -->
+                                        <span class="info-box-text">Debitors And Creditors</span>
+                                        <span class="info-box-number">Payer Schemes</span>
                                     </div>
                                 </a>
                             </div>
                             <div class="col-md-3 col-sm-6 col-12">
-                                <a href="{% url 'finance' %}" class="info-box shadow">
-                                    <span class="info-box-icon bg-primary"><i class="fas fa-receipt"></i></span>
+                                <a href="{% url 'admin-settings-payment-modes' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-primary"><i class="bi-cash-coin"></i></span>
                     
                                     <div class="info-box-content">
-                                        <span class="info-box-text">Accounts Payable</span>
-                                        <!-- <span class="info-box-number">Info</span> -->
+                                        <span class="info-box-text">Payment Modes</span>
+                                        <span class="info-box-number">Payer Types</span>
                                     </div>
                                 </a>
                             </div>
                             <div class="col-md-3 col-sm-6 col-12">
-                                <a href="{% url 'finance' %}" class="info-box shadow">
-                                    <span class="info-box-icon bg-primary"><i class="fas fa-receipt"></i></span>
+                                <a href="{% url 'admin-settings-financial-accounts' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-primary"><i class="bi-cash-coin"></i></span>
                     
                                     <div class="info-box-content">
-                                        <span class="info-box-text">Accounts Receivable</span>
-                                        <!-- <span class="info-box-number">Info</span> -->
+                                        <span class="info-box-text">Financial Accounts</span>
+                                        <span class="info-box-number">Income & Bank Accounts</span>
                                     </div>
                                 </a>
                             </div>
                             <div class="col-md-3 col-sm-6 col-12">
-                                <a href="{% url 'finance' %}" class="info-box shadow">
-                                    <span class="info-box-icon bg-primary"><i class="fas fa-receipt"></i></span>
+                                <a href="{% url 'admin-settings-cash-options' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-primary"><i class="bi-cash-coin"></i></span>
                     
                                     <div class="info-box-content">
-                                        <span class="info-box-text">Asset Management</span>
-                                        <!-- <span class="info-box-number">Info</span> -->
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-3 col-sm-6 col-12">
-                                <a href="{% url 'finance' %}" class="info-box shadow">
-                                    <span class="info-box-icon bg-primary"><i class="fas fa-receipt"></i></span>
-                    
-                                    <div class="info-box-content">
-                                        <span class="info-box-text">Expense Management</span>
-                                        <!-- <span class="info-box-number">Info</span> -->
+                                        <span class="info-box-text">Cash Payment Options</span>
+                                        <span class="info-box-number">As Cash</span>
                                     </div>
                                 </a>
                             </div>
@@ -95,27 +85,7 @@
                                 </a>
                             </div>
                             <div class="col-md-3 col-sm-6 col-12">
-                                <a href="{% url 'finance' %}" class="info-box shadow">
-                                    <span class="info-box-icon bg-primary"><i class="fas fa-receipt"></i></span>
-                    
-                                    <div class="info-box-content">
-                                        <span class="info-box-text">Monthly Collection</span>
-                                        <!-- <span class="info-box-number">Info</span> -->
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-3 col-sm-6 col-12">
-                                <a href="{% url 'finance' %}" class="info-box shadow">
-                                    <span class="info-box-icon bg-primary"><i class="fas fa-receipt"></i></span>
-                    
-                                    <div class="info-box-content">
-                                        <span class="info-box-text">Daily Shift Reports</span>
-                                        <!-- <span class="info-box-number">Info</span> -->
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-3 col-sm-6 col-12">
-                                <a href="{% url 'finance' %}" class="info-box shadow">
+                                <a href="{% url 'finance-dpt-collection' %}" class="info-box shadow">
                                     <span class="info-box-icon bg-primary"><i class="fas fa-receipt"></i></span>
                     
                                     <div class="info-box-content">
@@ -125,7 +95,19 @@
                                 </a>
                             </div>
                         </div>
-                        
+                        <h4 class="mt-4 mb-2">Accounting</h4>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 col-12">
+                                <a href="{% url 'cash-petty-cash' %}" class="info-box shadow">
+                                    <span class="info-box-icon bg-primary"><i class="fas fa-receipt"></i></span>
+                    
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Expense Management</span>
+                                        <!-- <span class="info-box-number">Info</span> -->
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -2,5 +2,102 @@
 {% block content %}
 {% load static %}
 {% load custom_tags %}
-<h1>Petty Cash</h1>
+
+<div class="main-body">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Petty Cash</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'cashier' %}">Cashier</a></li>
+                        <li class="breadcrumb-item active">Petty Cash</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-md mb-4">
+        <div class="col-md-12 connectedSortable">
+            <div class="card card-primary">
+                <div class="card-header border-transparent">
+                    <h3 class="card-title">Petty Cash</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table m-0" id="main-table-all">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Purpose</th>
+                                    <th>Description</th>
+                                    <th>Account</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for field in all_expenses %}
+                                <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td>{{field.category}}</td>
+                                    <td>{{field.purpose}}</td>
+                                    <td>{{field.collection_account}}</td>
+                                    <td>{{field.amount}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <div class="card-title">Add New Expense</div>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>				
+                    </div>
+                    <div class="card-body">
+                        <!-- Display installation status and progress updates -->
+                        <div class="form-row">
+                            {% for field in form %}
+                            <div class="form-group col-md-6">
+                                {{field.label_tag}}
+                                {{field|addclass:"form-control"}}
+                                {% if field.help_text %}
+                                {{field.help_text}}
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="form-row">
+                            <button type="submit" class="btn btn-outline-primary">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% include 'table-scripts.html' %}
 {% endblock content %}

@@ -70,16 +70,16 @@ table tbody{
                 </div>
             </div>
             <div class="col-md-12 d-flex flex-wrap flex-row gap-4 p-2">
-                <div class="p-4 bor-rad-1 shadow d-flex flex-row align-items-center top-outline-success fill-480 bg-white">
+                <div class="p-4 rounded shadow d-flex flex-row align-items-center top-outline-success fill-480 bg-white">
                     <div class="col-md-8 d-flex flex-column">
                         <span class="col-md-12"><small class="m-0">Total Expenses</small></span>
-                        <h2 class="md bold">0</h2>
+                        <h2 class="md bold"><small>KES. </small>{{total_expenses}}</h2>
                     </div>
                     <div class="col-md-4">
                         <img src="{% static 'svgs/project.svg' %}" alt="icon" width="80" height="80" class="bg-light p-2 rounded-circle">
                     </div>
                 </div>
-                <div class="p-4 bor-rad-1 shadow d-flex flex-row align-items-center fill-480 top-outline-primary bg-white">
+                <div class="p-4 rounded shadow d-flex flex-row align-items-center fill-480 top-outline-primary bg-white">
                     <div class="col-md-8 d-flex flex-column">
                         <span class="col-md-12"><small class="m-0">Total Collection</small></span>
                         <h2 class="md bold"><small>KES. </small>{{total_collection}}</h2>
@@ -88,7 +88,7 @@ table tbody{
                         <img src="{% static 'svgs/project-active.svg' %}" alt="icon" width="80" height="80" class="bg-light p-2 rounded-circle">
                     </div>
                 </div>
-                <div class="p-4 bor-rad-1 shadow d-flex flex-row align-items-center fill-480 top-outline-primary bg-white">
+                <div class="p-4 rounded shadow d-flex flex-row align-items-center fill-480 top-outline-primary bg-white">
                     <div class="col-md-8 d-flex flex-column">
                         <span class="col-md-12"><small class="m-0">New Patients</small></span>
                         <h2 class="md bold">{{patient_files|length}}</h2>
@@ -97,7 +97,7 @@ table tbody{
                         <img src="{% static 'svgs/community.svg' %}" alt="icon" width="80" height="80" class="bg-light p-2 rounded-circle">
                     </div>
                 </div>
-                <div class="p-4 bor-rad-1 shadow d-flex flex-row align-items-center fill-480 top-outline-primary bg-white">
+                <div class="p-4 rounded shadow d-flex flex-row align-items-center fill-480 top-outline-primary bg-white">
                     <div class="col-md-8 d-flex flex-column">
                         <span class="col-md-12"><small class="m-0">Total Patients</small></span>
                         <h2 class="lg bold">{{patient_files|length}}</h2>
@@ -218,6 +218,9 @@ table tbody{
 			<div class="card-header">
 				<div class="card-title">Today's Appointments</div>
 				<div class="card-tools">
+					<a href="{% url 'rec-appointments' %}#create-appointment" class="btn btn-tool" title="Add New" data-widget="new-appointment-toggle">
+					<i class="fas fa-plus-square"></i>
+				  </a>
 					<button type="button" class="btn btn-tool" data-card-widget="collapse">
 						<i class="fas fa-minus"></i>
 					</button>
@@ -227,7 +230,42 @@ table tbody{
 				</div>
 			</div>
 			<div class="card-body">
-			<!-- Display installation calendar and upcoming installations -->
+				<div class="table-responsive">
+					<table class="table m-0" id="main-table">
+						<thead>
+							<tr>
+								<th>File No.</th>
+								<th>Name</th>
+								<th>Schedule</th>
+								<th>Doctor</th>
+								<th>Admission</th>
+								<th>Payer</th>
+								<th>Status</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for pat_file in appointments %}
+							<tr>
+								<td>{{pat_file.apt_id}}</td>
+								<td>{{pat_file.name}}</td>
+								<td>{{pat_file.appointment_date}}</td>
+								<td>{{pat_file.doctor}}</td>
+								<td>{{pat_file.admission_category}}</td>
+								<td>{{pat_file.payment_mode}}</td>
+								<td>
+									{% if pat_file.cleared %}
+									<div class="badge badge-success" data-color="#00a65a" data-height="20">Cleared</div>
+									{% else %}
+									<div class="badge badge-warning" data-color="#00a65a" data-height="20">Pending</div>
+									{% endif %}
+								</td>
+								<td><a href="{% url 'appointment-file' pat_file.id %}">Details</a></td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 		<div class="card card-primary card-outline">
@@ -268,23 +306,6 @@ table tbody{
 					</div>
 				<!-- </div> -->
 			<!-- Display installation status and progress updates -->
-			</div>
-		</div>
-		<div class="card card-primary card-outline">
-			<div class="card-header">
-				<div class="card-title">Daily Collections This Week</div>
-				<div class="card-tools">
-					<button type="button" class="btn btn-tool" data-card-widget="collapse">
-						<i class="fas fa-minus"></i>
-					</button>
-					<button type="button" class="btn btn-tool" data-card-widget="remove">
-						<i class="fas fa-times"></i>
-					</button>
-				</div>				
-			</div>
-			<div class="card-body">
-				<!-- Display installation status and progress updates -->
-				<canvas id="installedSystemsChart" width="100" height="100"></canvas>
 			</div>
 		</div>
     </div>
@@ -340,18 +361,18 @@ table tbody{
 	datasets: [
 		{
 		label: 'Outpatient Income',
-		backgroundColor: 'rgba(40, 167, 69, 0.5)', // Green with opacity
-		borderColor: 'rgba(40, 167, 69, 1)', // Solid green
-		borderWidth: 1,
-		data: valuesArr,
-		},
-		{
-		label: 'Inpatient Income',
 		backgroundColor: 'rgba(40, 67, 169, 0.5)',
 		borderColor: 'rgba(40, 67, 169, 1)',
 		borderWidth: 1,
-		data: [0, 500,2000,3000,2500,3500,3000],
+		data: valuesArr,
 		},
+		// {
+		// label: 'Inpatient Income',
+		// backgroundColor: 'rgba(40, 167, 69, 0.5)', // Green with opacity
+		// borderColor: 'rgba(40, 167, 69, 1)', // Solid green
+		// borderWidth: 1,
+		// data: [0, 500,2000,3000,2500,3500,3000],
+		// },
 	],
 	};
 
@@ -359,30 +380,6 @@ table tbody{
 		type: 'line',
 		data: dptIncomeData,
 	});
-
-	// Create and display a system performance chart
-
-	// Example data for system performance
-	const installedSystemsData = {
-	labels: ['Submersible', 'Drip', 'Overhead'],
-	datasets: [
-		{
-		data: [75, 85, 60],
-		backgroundColor: ['rgba(0, 123, 255, 0.8)', 'rgba(40, 167, 69, 0.8)', 'rgba(0, 0, 0, 0.8)'],
-		},
-	],
-	};
-	const installedSystemsChartCanvas = document.getElementById('installedSystemsChart');
-	const installedSystemsChart = new Chart(installedSystemsChartCanvas, {
-	type: 'doughnut',
-	data: installedSystemsData,
-	options: {
-		legend: {
-		position: 'right',
-		},
-	},
-	});
-
 </script>
 {% include 'table-scripts.html' %}
 {% endblock content %}

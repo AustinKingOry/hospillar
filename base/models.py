@@ -586,3 +586,31 @@ class Supplier(models.Model):
     
     def field_id(self):
         return self.rec_id
+        
+class ExpenseCategory(models.Model):
+    rec_id = models.CharField(max_length=10,unique=True)
+    name = models.CharField(max_length=100,unique=True)
+    description = models.TextField()
+    added_by = models.ForeignKey(User,on_delete=models.DO_NOTHING,null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+    def field_id(self):
+        return self.rec_id
+    
+class Expense(models.Model):
+    rec_id = models.CharField(max_length=10,unique=True)
+    collection_account = models.ForeignKey(FinancialAccount,on_delete=models.SET_NULL,null=True)
+    amount = models.FloatField(default=0)
+    transaction_code = models.CharField(max_length=100)
+    category = models.ForeignKey(ExpenseCategory,on_delete=models.DO_NOTHING,null=True)
+    purpose = models.TextField()
+    added_by = models.ForeignKey(User,on_delete=models.DO_NOTHING,null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.purpose
+    
+    def field_id(self):
+        return self.rec_id

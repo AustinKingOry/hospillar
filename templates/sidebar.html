@@ -110,6 +110,12 @@
                                 <p>Patient Invoices</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{% url 'cash-petty-cash' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Petty Cash</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'nurse'|lower %}active{% endif %}">
@@ -327,30 +333,6 @@
                         <li class="nav-item">
                             <a href="{% url 'finance' %}" class="nav-link">
                                 <i class="nav-icon far fa-circle"></i>
-                                <p>Ledgers</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'finance' %}" class="nav-link">
-                                <i class="nav-icon far fa-circle"></i>
-                                <p>Accounts Payable</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'finance' %}" class="nav-link">
-                                <i class="nav-icon far fa-circle"></i>
-                                <p>Accounts Receivable</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'finance' %}" class="nav-link">
-                                <i class="nav-icon far fa-circle"></i>
-                                <p>Asset Management</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'finance' %}" class="nav-link">
-                                <i class="nav-icon far fa-circle"></i>
                                 <p>Expense Management</p>
                             </a>
                         </li>
@@ -358,6 +340,12 @@
                             <a href="{% url 'finance' %}" class="nav-link">
                                 <i class="nav-icon far fa-circle"></i>
                                 <p>Reports</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'finance' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Settings</p>
                             </a>
                         </li>
                     </ul>

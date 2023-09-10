@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import UserCreationForm,UserChangeForm,PasswordChangeForm,PasswordResetForm
-from .models import Patient,User,PatientLog,Prescription,ServiceLog,DebitPaymentLog,Drug,DrugStockTake,Employee,EmployeeEvaluation,AttendanceLog,EmployeeLeave,Payroll,Department,Service,PayerScheme,PaymentMode,EmergencyCode,Facility,CashOption,LeaveStatus,LeaveType,FinancialAccount,ImagingLog,Supplier,Appointment
+from .models import Patient,User,PatientLog,Prescription,ServiceLog,DebitPaymentLog,Drug,DrugStockTake,Employee,EmployeeEvaluation,AttendanceLog,EmployeeLeave,Payroll,Department,Service,PayerScheme,PaymentMode,EmergencyCode,Facility,CashOption,LeaveStatus,LeaveType,FinancialAccount,ImagingLog,Supplier,Appointment,Expense,ExpenseCategory
 from django.contrib.auth.models import Group
 
 class MyUserCreationForm(UserCreationForm):
@@ -236,3 +236,16 @@ class AppointmentChangeForm(ModelForm):
         model = Appointment
         fields = '__all__'
         exclude = ['apt_id','added_by']
+
+class ExpenseCategoryForm(ModelForm):
+    class Meta:
+        model = ExpenseCategory
+        fields = '__all__'
+        exclude = ['rec_id','added_by']
+        
+class ExpenseForm(ModelForm):
+    class Meta:
+        model = Expense
+        fields = '__all__'
+        exclude = ['rec_id','added_by']
+        

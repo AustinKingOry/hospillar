@@ -1,0 +1,117 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+
+<div class="main-body">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Daily Departmental Income</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'finance' %}">finance</a></li>
+                        <li class="breadcrumb-item active">Departmental Income</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-md mb-4">
+        <div class="col-md-12 d-flex flex-row flex-wrap connectedSortable">
+            <div class="col-md-6">
+                <div class="card card-primary card-outline">
+                    <div class="card-header border-transparent">
+                        <h3 class="card-title">Daily Departmental Income</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table m-0" id="main-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Department</th>
+                                        <th>Collection</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for dpt,amount in collections.items %}
+                                    <tr>
+                                        <td>{{forloop.counter}}</td>
+                                        <td>{{dpt}}</td>
+                                        <td>{{amount}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <div class="card-title">Daily Departmental Sales</div>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>				
+                    </div>
+                    <div class="card-body">
+                        <!-- Display installation status and progress updates -->
+                        <canvas id="dptIncomeChart" width="400" height="200" keys="{% for k,v in collections.items %}{{k}}{% if not forloop.last %},{% endif %}{% endfor %}" values="{% for k,v in collections.items %}{{v}}{% if not forloop.last %},{% endif %}{% endfor %}"></canvas>
+                    </div>
+                </div>
+            </div>            
+        </div>
+    </div>
+</div>
+<script>
+    // Example data for payment trends
+	const dptIncomeChartCanvas = document.getElementById('dptIncomeChart');
+	var dpt_keys = dptIncomeChartCanvas.getAttribute('keys');
+	var dpt_values = dptIncomeChartCanvas.getAttribute('values');
+	var keysArr = dpt_keys.split(',');
+	var valuesArr = dpt_values.split(',');
+	const dptIncomeData = {
+	labels: keysArr,
+	datasets: [
+		{
+		label: 'Outpatient Income',
+		backgroundColor: 'rgba(40, 167, 69, 0.5)', // Green with opacity
+		borderColor: 'rgba(40, 167, 69, 1)', // Solid green
+		borderWidth: 1,
+		data: valuesArr,
+		},
+		{
+		label: 'Inpatient Income',
+		backgroundColor: 'rgba(40, 67, 169, 0.5)',
+		borderColor: 'rgba(40, 67, 169, 1)',
+		borderWidth: 1,
+		data: [0, 500,2000,3000,2500,3500,3000],
+		},
+	],
+	};
+
+	const dptIncomeChart = new Chart(dptIncomeChartCanvas, {
+		type: 'line',
+		data: dptIncomeData,
+	});
+</script>
+{% include 'table-scripts.html' %}
+{% endblock content %}

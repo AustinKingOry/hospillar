@@ -21,9 +21,11 @@ urlpatterns = [
     path('cashier/cash-uncompleted',views.cashierUncompleted,name='cash-uncompleted'),
     path('cashier/patient-invoices',views.cashierInvoicesList,name='cash-patient-invoices'),
     path('cashier/print-patient-invoice/<str:pk>/',views.patientInvoice,name='cash-patient-invoice'),
+    path('cashier/cash-petty-cash',views.cashierExpenses,name='cash-petty-cash'),
     
     path('finance',views.finance,name='finance'),
     path('finance/daily-collection-report',views.financeDailyCollection,name='daily-collection-report'),
+    path('finance/dpt-collection',views.finance_dpt_collections,name='finance-dpt-collection'),
     
     path('hr',views.humanResource,name='hr'),
     path('hr/manage-employees',views.hrManageEmployees,name='hr-manage-employees'),
@@ -105,6 +107,7 @@ urlpatterns = [
     path('hosp-admin/settings/payment-modes',views.settingsListingPaymentModes,name='admin-settings-payment-modes'),
     path('hosp-admin/settings/financial-accounts',views.settingsListingFinancialAccounts,name='admin-settings-financial-accounts'),
     path('hosp-admin/settings/cash-options',views.settingsListingCashOptions,name='admin-settings-cash-options'),
+    path('hosp-admin/settings/petty-cash',views.settingsListingPettyCash,name='admin-settings-petty-cash'),
     path('hosp-admin/settings/emergency-codes',views.settingsListingEmergencyCodes,name='admin-settings-emergency-codes'),
     path('hosp-admin/settings/leave-statuses',views.settingsListingLeaveStatuses,name='admin-settings-leave-statuses'),
     path('hosp-admin/settings/leave-types',views.settingsListingLeaveTypes,name='admin-settings-leave-types'),
