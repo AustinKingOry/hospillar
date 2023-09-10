@@ -28,9 +28,9 @@
                 <div class="form-group col-md-4">
                     <label for="id_admission_category">Admission Category:</label>
                     <select name="admission_category" id="id_admission_category" class="form-control" required>
-                        <option value="">--Select--</option>
-                        <option value="OP">OUTPATIENT</option>
-                        <option value="IP">INPATIENT</option>
+                        {% for opt in form.admission_category %}
+                        {{opt}}
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="form-group col-md-4">

@@ -7,6 +7,9 @@ urlpatterns = [
     path('reception/patient-inventory',views.reception_pat_inventory,name='rec-pat-inventory'),
     path('reception/patient-file/<str:pk>/',views.rec_show_patient,name='rec-show-patient'),
     path('reception/search-patient',views.reception_search_patient,name='rec-search-patient'),
+    path('reception/appointments',views.reception_appointments,name='rec-appointments'),
+    path('reception/appointment-file/<str:pk>/',views.reception_appointment_file,name='appointment-file'),
+    path('reception/daily-patients/',views.reception_daily_patients,name='daily-patients'),
     
     path('cashier',views.cashier,name='cashier'),
     path('cashier/patient-file/<str:pk>/',views.cashierPatFile,name='cash-patient-file'),

@@ -1,0 +1,153 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+
+<div class="main-body">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Appointments</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'reception' %}">reception</a></li>
+                        <li class="breadcrumb-item active">Appointments</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-md mb-4">
+        <div class="col-md-12 connectedSortable">
+            <div class="card card-primary card-outline">
+                <div class="card-header border-transparent">
+                    <h3 class="card-title">Today's Appointments</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table m-0" id="main-table">
+                            <thead>
+                                <tr>
+                                    <th>File No.</th>
+                                    <th>Name</th>
+                                    <th>Schedule</th>
+                                    <th>Doctor</th>
+                                    <th>Admission</th>
+                                    <th>Payer</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pat_file in appointments %}
+                                <tr>
+                                    <td>{{pat_file.apt_id}}</td>
+                                    <td>{{pat_file.name}}</td>
+                                    <td>{{pat_file.appointment_date}}</td>
+                                    <td>{{pat_file.doctor}}</td>
+                                    <td>{{pat_file.admission_category}}</td>
+                                    <td>{{pat_file.payment_mode}}</td>
+                                    <td>
+                                        {% if pat_file.cleared %}
+                                        <div class="badge badge-success" data-color="#00a65a" data-height="20">Cleared</div>
+                                        {% else %}
+                                        <div class="badge badge-warning" data-color="#00a65a" data-height="20">Pending</div>
+                                        {% endif %}
+                                    </td>
+                                    <td><a href="{% url 'appointment-file' pat_file.id %}">Details</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Book New Appointment</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group col-md-6 pl-3">
+                                <label for="id_name">Name:</label>
+                                <input type="text" name="name" maxlength="200" class="form-control" required id="id_name">
+                            </div>
+                            <div class="form-group col-md-6 pl-3">
+                                <label for="id_admission_category">Admission category:</label>
+                                <select name="admission_category" class="form-control" id="id_admission_category" required>
+                                    {% for opt in form.admission_category %}
+                                    {{opt}}
+                                    {% endfor %}
+                                </select>  
+                            </div>
+                            <div class="form-group col-md-6 pl-3">
+                                <label for="id_doctor">Doctor:</label>
+                                <select name="doctor" class="form-control" required="" id="id_doctor">
+                                    {% for opt in form.doctor %}
+                                    {{opt}}
+                                    {% endfor %}
+                                </select>       
+                            </div>
+                            <div class="form-group col-md-6 pl-3">
+                                <label for="id_payment_mode">Payment mode:</label>
+                                <select name="payment_mode" class="form-control" required="" id="id_payment_mode">
+                                    {% for opt in form.payment_mode %}
+                                    {{opt}}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6 pl-3">
+                                <label for="id_appointment_date">Appointment date:</label>
+                                <input type="date" name="appointment_date" class="form-control" required="" id="id_appointment_date">
+                            </div>
+                            <div class="form-group col-md-6 pl-3">
+                                <label for="id_appointment_time">Appointment time:</label>
+                                <input type="time" name="appointment_time" class="form-control" required="" id="id_appointment_time">
+                            </div>
+                            <div class="form-group col-md-6 pl-3">
+                                <label for="id_service">Service:</label>
+                                <select name="service" class="form-control select2bs4" id="id_service" multiple>
+                                    {% for opt in form.service %}
+                                    {{opt}}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-10 pl-3">
+                                <label for="id_description">Description:</label>
+                                <textarea name="description" cols="40" rows="10" class="form-control" required="" id="id_description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="form-group float-right">
+                            <input type="submit" value="Save Appointment" class="btn btn-block btn-primary">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% include 'table-scripts.html' %}
+{% endblock content %}

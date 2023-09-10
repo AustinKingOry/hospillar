@@ -3,9 +3,9 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required,user_passes_test,permission_required
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.models import Group, Permission
-from .forms import PatientForm,MyUserCreationForm,PatientLogForm,NursePatientLogForm,PrescriptionForm,ServiceLogForm,CashPatientLogForm,DebitPayLogForm,DebitPayLogFormInv,PharPatientLogForm,PharNewDrugForm,PharDrugAdjustForm,StockTakeForm,LabPatientLogForm,EmployeeForm,EmployeeEvaluationForm,EmployeeAttendanceForm,EmployeeCheckoutForm,EmployeeLeaveApprovalForm,EmployeeLeaveApplicationForm,PayrollForm,PayrollApprovalForm,DepartmentForm,FacilityForm,FinancialAccountForm,PaymentModeForm,CreditorForm,EmergencyCodeForm,CashOptionForm,ServiceForm,DeleteForm,LeaveStatusForm,LeaveTypeForm,ImagingPatientLogForm,SupplierForm,DentalPatientLogForm,AddUsersToGroupForm,UserUpdateForm,ChangePwdForm,ForgotPwdForm
+from .forms import PatientForm,MyUserCreationForm,PatientLogForm,NursePatientLogForm,PrescriptionForm,ServiceLogForm,CashPatientLogForm,DebitPayLogForm,DebitPayLogFormInv,PharPatientLogForm,PharNewDrugForm,PharDrugAdjustForm,StockTakeForm,LabPatientLogForm,EmployeeForm,EmployeeEvaluationForm,EmployeeAttendanceForm,EmployeeCheckoutForm,EmployeeLeaveApprovalForm,EmployeeLeaveApplicationForm,PayrollForm,PayrollApprovalForm,DepartmentForm,FacilityForm,FinancialAccountForm,PaymentModeForm,CreditorForm,EmergencyCodeForm,CashOptionForm,ServiceForm,DeleteForm,LeaveStatusForm,LeaveTypeForm,ImagingPatientLogForm,SupplierForm,DentalPatientLogForm,AddUsersToGroupForm,UserUpdateForm,ChangePwdForm,ForgotPwdForm,AppointmentForm,AppointmentChangeForm
 
-from .models import User,Department,Patient,PatientLog,PaymentMode,Service,ServiceLog,Drug,PayerScheme,Prescription,DebitPaymentLog,DrugStockTake,EmergencyCode,Facility,LabLog,Employee,EmployeeEvaluation,AttendanceLog,EmployeeLeave,LeaveStatus,LeaveType,Payroll,CashOption,FinancialAccount,ImagingLog,Supplier,DentalLog
+from .models import User,Department,Patient,PatientLog,PaymentMode,Service,ServiceLog,Drug,PayerScheme,Prescription,DebitPaymentLog,DrugStockTake,EmergencyCode,Facility,LabLog,Employee,EmployeeEvaluation,AttendanceLog,EmployeeLeave,LeaveStatus,LeaveType,Payroll,CashOption,FinancialAccount,ImagingLog,Supplier,DentalLog,Appointment
 from .functions import createId,createPrescription,createServiceLog,createOp,create_groups,is_admin,user_perms,has_custom_permissions,daily_departmental_income,daily_pharmacy_income
 from django.contrib import messages
 from django.db.models import Q
@@ -20,7 +20,7 @@ def home(request):
     total_collection = 0
     current_date = timezone.localdate()
     today_services = ServiceLog.objects.filter(created__date = current_date)
-    patient_files = PatientLog.objects.filter(created__date=current_date)[0:8]
+    patient_files = PatientLog.objects.filter(created__date=current_date)[0:20]
     # getting the sum total income for all payers
     paylogs = DebitPaymentLog.objects.filter(created__date=current_date)
     for p in paylogs:
@@ -69,7 +69,9 @@ def addUser(request):
             user.groups.set(form.cleaned_data['groups'])
             messages.success(request,'Account created successfully.')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     
     page_title = 'Admin | Add User'
     context = {'page_title':page_title,'form':form,'departments':departments,'groups':groups}
@@ -85,7 +87,9 @@ def editProfile(request):
             form.save()
             messages.success(request,'Account updated successfully.')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     
     page_title = 'Edit Profile'
     context = {'page_title':page_title,'form':form}
@@ -105,7 +109,9 @@ def change_password(request):
             messages.success(request,'Password has been changed successfully.')
             return redirect('profile')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Change Password'
     context = {'page_title':page_title,'form':form}
     return render(request,'base/change-password.html',context)
@@ -119,7 +125,9 @@ def forgot_password(request):
             messages.success(request,'Check your email for a one-time link for reseting your password.')
             # return redirect('profile')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Change Password'
     context = {'page_title':page_title,'form':form,'hide_skeleton':True}
     return render(request,'base/forgot-password.html',context)
@@ -210,6 +218,56 @@ def reception_pat_inventory(request):
     page_title = 'Patients Inventory'
     context = {'page_title':page_title,'patients':all_patients}
     return render(request,'base/reception/all-patients.html',context)
+
+@login_required(login_url="login")
+@permission_required(user_perms('reception'),login_url='no-permission')
+def reception_daily_patients(request):
+    current_date = timezone.localdate()
+    patient_files = PatientLog.objects.filter(created__date=current_date)[0:20]
+    page_title = 'Patients Inventory'
+    context = {'page_title':page_title,'patients':patient_files}
+    return render(request,'base/reception/daily-patients.html',context)
+
+@login_required(login_url="login")
+@permission_required(user_perms('reception'),login_url='no-permission')
+def reception_appointments(request):
+    all_appointments = Appointment.objects.filter(cleared=False).order_by('name')
+    form = AppointmentForm()
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            apt = form.save(commit=False)
+            apt.apt_id = createId(Appointment,Appointment.apt_id,'APT')
+            apt.added_by = request.user
+            apt.save()
+            messages.success(request,'Appointment has been booked successfully.')
+            return redirect('rec-appointments')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
+    page_title = 'Appointments'
+    context = {'page_title':page_title,'appointments':all_appointments,'form':form}
+    return render(request,'base/reception/appointments.html',context)
+
+@login_required(login_url="login")
+@permission_required(user_perms('reception'),login_url='no-permission')
+def reception_appointment_file(request,pk):
+    appointment = Appointment.objects.get(id=pk)
+    form = AppointmentChangeForm(instance = appointment)
+    if request.method == 'POST':
+        form = AppointmentChangeForm(request.POST,instance = appointment)
+        if form.is_valid():
+            form.save()
+            messages.success(request,'Appointment has been updated successfully.')
+            return redirect('rec-appointments')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
+    page_title = 'Appointment file'
+    context = {'page_title':page_title,'appointment':appointment,'form':form}
+    return render(request,'base/reception/appointment-file.html',context)
 
 @login_required(login_url="login")
 @permission_required(user_perms('reception'),login_url='no-permission')
@@ -369,7 +427,9 @@ def rec_show_patient(request,pk):
             pat_log.involved_depts.add(forwarded_dpt)
             return redirect('reception')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Patient File | '+patient.full_name()
     context = {'page_title':page_title,'form':form,'payers':payers,'departments':departments,'services':services,'doctors':doctors,'patient':patient,'emergency_codes':emergency_codes}
     return render(request,'base/reception/patient-file.html',context)
@@ -444,7 +504,9 @@ def cashierPatFile(request,pk):
             messages.success(request,'Patient data updated successfully!')
             return redirect('cash-uncompleted')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Cash Office | Patient File'
     context = {'page_title':page_title,'form':form,'patientlog':patientLogFile,'services':services,'departments':departments,'prescriptions':prescriptions,'totalPrice':totalPrice,'allItems':allItems}
     return render(request,'base/cashier/patient-file.html',context)
@@ -561,7 +623,9 @@ def cashFinalize(request,pk):
             messages.success(request,'Finalized Successfully.')
             return redirect('cash-receipt',payfile.id)
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Finalize Payment'
     context = {'page_title':page_title,'patientlog':patientLogFile,'form':form,'hide_skeleton':True,'billable_amount':totalPrice}
     return render(request,'base/cashier/finalize-payment.html',context)
@@ -611,7 +675,9 @@ def medEditPrescriptions(request,pk):
             drugrec.save()
             messages.success(request,str(drugrec)+' has been updated successfully!')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Edit Prescription'
     context = {'page_title':page_title,'patientlog':patientLogFile,'form':form,'drugs':drugs,'hide_skeleton':True,'prescriptions':prescriptions}
     return render(request,'base/med/create-prescription.html',context)
@@ -662,7 +728,9 @@ def medEditServices(request,pk):
             patientLogFile.inclusive_service.add(srvfile)
             messages.success(request,str(srvfile)+' has been added successfully!')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Edit Service'
     context = {'page_title':page_title,'patientlog':patientLogFile,'form':form,'services':services,'hide_skeleton':True,'ser_logs':ser_logs}
     return render(request,'base/med/create-service.html',context)
@@ -746,7 +814,9 @@ def nursePatientFile(request,pk):
             messages.success(request,'Patient data saved successfully!')
             return redirect('nurse-unattended')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Nurse | View Patient File'
     context = {'page_title':page_title,'form':form,'patientlog':patientLogFile,'services':services,'departments':departments}
     return render(request,'base/nurse/patient-file.html',context)
@@ -805,7 +875,9 @@ def pharmacyPatFile(request,pk):
             messages.success(request,'Patient data updated successfully!')
             return redirect('pharmacy-uncompleted')
         else:
-            messages.error(form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Pharmacy | View Patient File'
     context = {'page_title':page_title,'patientlog':patientLogFile,'departments':departments,'prescriptions':prescriptions}
     return render(request,'base/pharmacy/patient-file.html',context)
@@ -826,7 +898,9 @@ def pharmacyAddDrug(request):
             messages.success(request,str(drug_name)+' saved successfully!')
             return redirect('pharmacy-new-drug')
         else:
-            messages.error(form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Pharmacy | Add New Drug'
     context = {'page_title':page_title,'drugs_inventory':drugs_inventory,'form':form}
     return render(request,'base/pharmacy/new-drug.html',context)
@@ -868,7 +942,9 @@ def pharmacyAdjustDrug(request,pk):
             messages.success(request,str(drug_name)+' changed successfully!')
             return redirect('pharmacy-adjustment-listing')
         else:
-            messages.error(form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Pharmacy | Adjust Drug Details'
     context = {'page_title':page_title,'drug_obj':drug_obj,'form':form}
     return render(request,'base/pharmacy/adjust-drug.html',context)
@@ -896,7 +972,9 @@ def pharmacyStockTake(request):
             messages.success(request,'Stock Take record submitted successfully!😉')
             return redirect('pharmacy-stock-take')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Stock Take'
     context = {'page_title':page_title,'all_drugs':drugs_inventory,'form':form,'records_created_today':records_created_today}
     return render(request,'base/pharmacy/stock-take-form.html',context)
@@ -932,7 +1010,9 @@ def hrNewEmployee(request):
             messages.success(request,str(employeeform)+' has been reqistered successfully.')
             return redirect('hr-manage-employees')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     context = {'page_title':page_title,'form':form}
     return render(request,'base/human-resource/new-employee.html',context)
 
@@ -976,7 +1056,9 @@ def hrEmployeeEvaluationFile(request,pk):
             messages.success(request,'Evaluation for '+str(employeeform)+' has been completed successfully.')
             return redirect('hr-evaluation')
         else:
-            messages.error(form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     context = {'page_title':page_title,'form':form,'employee':employee}
     return render(request,'base/human-resource/new-evaluation-file.html',context)
 
@@ -997,7 +1079,9 @@ def hrOpenEvaluationFile(request,pk):
             messages.success(request,'Evaluation for '+str(employeeform)+' has been changed successfully.')
             return redirect('hr-completed-evaluations')
         else:
-            messages.error(form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     context = {'page_title':page_title,'form':form,'evaluationFile':evaluationFile,'attendances':attendances,'previous_leaves':previous_leaves}
     return render(request,'base/human-resource/open-evaluation-file.html',context)
 
@@ -1029,7 +1113,9 @@ def hrEmployeeFile(request,pk):
             messages.success(request,str(employeeform)+' file has been updated successfully.')
             return redirect('hr-manage-employees')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'HR | File For ' + str(employee)
     context = {'page_title':page_title,'employee':employee,'form':form,'departments':departments}
     return render(request,'base/human-resource/employee-file.html',context)
@@ -1068,7 +1154,9 @@ def hrLeaveRequestFile(request,pk):
             form.save()
             messages.success(request,"Leave Details updated Successfully.")
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Leave Details'
     context = {'page_title':page_title,'leave_file':leave_file,'form':form,'leave_stats':leave_stats}
     return render(request,'base/human-resource/leave-request-file.html',context)
@@ -1090,7 +1178,9 @@ def hrAddLeave(request):
             messages.success(request,"Leave Details updated Successfully.")
             return redirect('hr-leave-mgm')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Leave Details'
     context = {'page_title':page_title,'form':form,'leave_stats':leave_stats}
     return render(request,'base/human-resource/add-leave.html',context)
@@ -1118,7 +1208,9 @@ def hrAddPayroll(request):
             messages.success(request,"Payroll data updated Successfully.")
             return redirect('hr-payroll')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     
     context = {'page_title':page_title,'form':form}
     return render(request,'base/human-resource/payment-form.html',context)
@@ -1154,7 +1246,9 @@ def hrPayrollRecordFile(request,pk):
             form.save()
             messages.success(request,"Leave Details updated Successfully.")
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Leave Details'
     context = {'page_title':page_title,'payroll_record_file':payroll_record_file}
     return render(request,'base/human-resource/payroll-record-file.html',context)
@@ -1181,7 +1275,9 @@ def hrAttendanceNew(request):
             messages.success(request,str(att_form)+" has been checked in successfully 👍.")
             return redirect('hr-attendance')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     context = {'page_title':page_title,'form':form}
     return render(request,'base/human-resource/attendance-new.html',context)
 
@@ -1200,7 +1296,9 @@ def hrAttendanceFile(request,pk):
             messages.success(request,str(att_form)+" has been checked out successfully 👍.")
             return redirect('hr-attendance')
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     context = {'page_title':page_title,'form':form,'attendance_file':attendance_file}
     return render(request,'base/human-resource/attendance-file.html',context)
 
@@ -1433,12 +1531,13 @@ def imagingPatFile(request,pk):
             messages.success(request,'Patient data updated successfully!')
             return redirect('imaging-uncompleted')
         else:
-            messages.error(form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
 
     page_title = 'Imaging | Patient File'
     context = {'page_title':page_title,'patientlog':patientLogFile,'departments':departments,'tests':tests}
     return render(request,'base/imaging/patient-file.html',context)
-
 
 #dental department with its related fields
 @login_required(login_url="login")
@@ -1504,7 +1603,9 @@ def dentalPatFile(request,pk):
             messages.success(request,'Patient data updated successfully!')
             return redirect('dental-uncompleted')
         else:
-            messages.error(form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
 
     page_title = 'Dental | Patient File'
     context = {'page_title':page_title,'patientlog':patientLogFile,'departments':departments,'procedures':procedures,'prescriptions':prescriptions}
@@ -1575,12 +1676,13 @@ def investigationsPatFile(request,pk):
             messages.success(request,'Patient data updated successfully!')
             return redirect('investigations-uncompleted')
         else:
-            messages.error(form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
 
     page_title = 'Patient File | Lab'
     context = {'page_title':page_title,'patientlog':patientLogFile,'departments':departments,'tests':tests}
     return render(request,'base/investigations/patient-file.html',context)
-
 
 @login_required(login_url="login")
 @user_passes_test(is_admin,login_url="login")
@@ -1871,7 +1973,9 @@ def settingsEdit(request,table,pk):
             messages.success(request,str(obj)+' has been updated successfully.')
             return redirect(after_submit)
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
             
     page_title = 'Edit '+keyword
     context = {'page_title':page_title,'form':form,'keyword':keyword,'obj':obj,'deletable':deletable}
@@ -1952,7 +2056,9 @@ def settingsAdd(request,table):
             messages.success(request,str(rec_form)+' has been saved successfully.')
             return redirect(request.META['HTTP_REFERER'])
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
     page_title = 'Edit '+keyword
     context = {'page_title':page_title,'form':form,'keyword':keyword}
     return render(request,'base/hosp-settings/edit-item-form.html',context)
@@ -2012,7 +2118,9 @@ def settingsDelete(request,table,pk):
             messages.success(request,obj_name+' has been deleted successfully.')
             return redirect(request.META['HTTP_REFERER'])
         else:
-            messages.error(request,form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
         
     page_title = 'Delete '+keyword
     context = {'page_title':page_title,'keyword':keyword,'obj':obj}

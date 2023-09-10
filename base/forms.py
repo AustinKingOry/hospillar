@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import UserCreationForm,UserChangeForm,PasswordChangeForm,PasswordResetForm
-from .models import Patient,User,PatientLog,Prescription,ServiceLog,DebitPaymentLog,Drug,DrugStockTake,Employee,EmployeeEvaluation,AttendanceLog,EmployeeLeave,Payroll,Department,Service,PayerScheme,PaymentMode,EmergencyCode,Facility,CashOption,LeaveStatus,LeaveType,FinancialAccount,ImagingLog,Supplier
+from .models import Patient,User,PatientLog,Prescription,ServiceLog,DebitPaymentLog,Drug,DrugStockTake,Employee,EmployeeEvaluation,AttendanceLog,EmployeeLeave,Payroll,Department,Service,PayerScheme,PaymentMode,EmergencyCode,Facility,CashOption,LeaveStatus,LeaveType,FinancialAccount,ImagingLog,Supplier,Appointment
 from django.contrib.auth.models import Group
 
 class MyUserCreationForm(UserCreationForm):
@@ -224,3 +224,15 @@ class AddUsersToGroupForm(forms.Form):
         queryset=User.objects.all(),
         widget=forms.CheckboxSelectMultiple,
     )
+
+class AppointmentForm(ModelForm):
+    class Meta:
+        model = Appointment
+        fields = '__all__'
+        exclude = ['apt_id','added_by','viewed','cleared']
+
+class AppointmentChangeForm(ModelForm):
+    class Meta:
+        model = Appointment
+        fields = '__all__'
+        exclude = ['apt_id','added_by']

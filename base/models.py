@@ -259,6 +259,38 @@ class ServiceLog(models.Model):
             return self.price*self.quantity
 
 
+class Appointment(models.Model):
+    adm_1 = 'OUTPATIENT'
+    adm_2 = 'INPATIENT'
+    admission_choices = [
+        (adm_1,'outpatient'),
+        (adm_2,'inpatient'),
+    ]
+    apt_id = models.CharField(max_length=10,unique=True)
+    name = models.CharField(max_length=200)
+    admission_category = models.CharField(max_length=15,null=False,choices=admission_choices,default=adm_1)
+    doctor = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name='apt_doc')
+    payment_mode = models.ForeignKey(PayerScheme,on_delete=models.SET_NULL,null=True)
+    appointment_date = models.DateField()
+    appointment_time = models.TimeField()
+    service = models.ManyToManyField(Service,blank=True)
+    description = models.TextField()
+    viewed = models.BooleanField(default=False)
+    cleared = models.BooleanField(default=False)
+    added_by = models.ForeignKey(User,on_delete=models.DO_NOTHING,null=True,related_name='added_by')
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    
+    
+    def __str__(self)->str:
+        return self.name
+    def field_id(self):
+        return self.apt_id
+    def created_today(self):
+        current_date = timezone.localdate()  # Get the current date in the current timezone
+        stored_date = self.created.astimezone(timezone.get_current_timezone()).date()  # Convert stored datetime to current timezone and extract date
+        return current_date == stored_date
+    
 class PatientLog(models.Model):
     adm_1 = 'OUTPATIENT'
     adm_2 = 'INPATIENT'

@@ -1,0 +1,80 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+
+<div class="main-body">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Today's Patients</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'reception' %}">reception</a></li>
+                        <li class="breadcrumb-item active">patient register</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-md mb-4">
+        <div class="col-md-12 connectedSortable">
+            <div class="card card-primary card-outline">
+                <div class="card-header border-transparent">
+                    <h3 class="card-title">Today's Patients</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table m-0" id="main-table-all">
+                            <thead>
+                                <tr>
+                                    <th>File No.</th>
+                                    <th>Name</th>
+                                    <th>Residence</th>
+                                    <th>Gender</th>
+                                    <th>Doctor</th>
+                                    <th>Admission</th>
+                                    <th>Payer</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pat_file in patients %}
+                                <tr>
+                                    <td>{{pat_file.patlog_id}}</td>
+                                    <td>{{pat_file.patient}}</td>
+                                    <td>{{pat_file.patient.residence}}</td>
+                                    <td>{{pat_file.patient.gender}}</td>
+                                    <td>{{pat_file.doctor}}</td>
+                                    <td>{{pat_file.admission_category}}</td>
+                                    <td>{{pat_file.payment_mode}}</td>
+                                    <td>
+                                        {% if pat_file.cash_cleared %}
+                                        <div class="badge badge-success" data-color="#00a65a" data-height="20">Cleared</div>
+                                        {% else %}
+                                        <div class="badge badge-warning" data-color="#00a65a" data-height="20">Pending</div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'table-scripts.html' %}
+{% endblock content %}
