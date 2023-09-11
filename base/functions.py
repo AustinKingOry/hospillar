@@ -241,15 +241,15 @@ def create_groups():
         
 def user_perms(dpt):
     perms={
-        'reception':['base.view_patient','base.change_patient','base.add_patientlog',],
+        'reception':['base.view_patient','base.change_patient','base.add_patientlog'],
         'cashier':['base.view_patient','base.change_patient','base.change_patientlog','base.change_debitpaymentlog'],
         'doctor':['base.view_patient','base.change_patient','base.change_patientlog','base.add_prescription','base.delete_prescription','base.change_prescription','base.add_servicelog','base.change_servicelog','base.delete_servicelog'],
-        'pharmacy':['base.view_patientlog','base.change_patientlog','base.add_prescription','base.delete_prescription','base.change_prescription'],
+        'pharmacy':['base.view_patientlog','base.change_patientlog','base.add_prescription','base.delete_prescription','base.change_prescription','base.change_drug','base.add_drug','base.delete_drug'],
         'lab':['base.view_patientlog','base.change_patientlog','base.add_lablog','base.delete_lablog','base.change_lablog'],
         'imaging':['base.view_patientlog','base.change_patientlog','base.add_imaginglog','base.delete_imaginglog','base.change_imaginglog'],
         'dental':['base.view_patientlog','base.change_patientlog','base.add_dentallog','base.delete_dentallog','base.change_dentallog'],
         'hr':['base.view_patient','base.add_attendancelog','base.change_attendancelog','base.delete_attendancelog','base.view_attendancelog','base.add_employeeevaluation','base.change_employeeevaluation','base.view_employeeevaluation','base.view_employeeevaluation','base.add_employee','base.change_employee','base.view_employee','base.delete_employee','base.add_employeeleave','base.view_employeeleave','base.change_employeeleave','base.delete_employeeleave','base.add_leavetype','base.view_leavetype','base.change_leavetype','base.delete_leavetype','base.add_payroll','base.view_payroll','base.change_payroll','base.delete_payroll'],
-        'nurse':['base.view_patient','base.change_patient','base.change_patientlog'],
+        'nurse':['base.view_patientlog','base.change_patientlog','base.add_lablog','base.change_lablog'],
         'finance':['base.add_payroll','base.view_payroll','base.change_payroll','base.delete_payroll'],
     }
     return perms[dpt]
