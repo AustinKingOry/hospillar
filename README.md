@@ -19,12 +19,12 @@ Hospillar is designed to streamline and enhance the management of hospital opera
 
 ## Installation
 
-Follow these steps to set up the General Hospital Management System on your local machine:
+Follow these steps to set up Hospillar on your local machine:
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/hospillar.git
+   git clone https://github.com/AustinKingOry/hospillar.git
 2. Navigate to the project directory:
 
    ```bash
