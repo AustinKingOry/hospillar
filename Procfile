@@ -1,0 +1,1 @@
+web: gunicorn hospillar.wsgi --log-file -
