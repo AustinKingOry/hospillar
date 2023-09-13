@@ -1,0 +1,38 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load custom_tags %}
+{% load static %}
+<div class="main-body">
+    <div class="form-container">
+        <h3>Nurse Inpatient File</h3>
+        <form action="" method="post">
+            {% csrf_token %}            
+            <div class="form-row">
+                {% for field in form %}
+                <div class="form-group col-md-6">
+                    {{ field.label_tag }}
+                    {{field|addclass:'form-control'}}
+                    {% if field.help_text %}
+                    {{field.help_text}}
+                    {% endif %}
+                </div>                
+                {% endfor %}
+            </div>
+            <!-- <div class="form-row">
+                <div class="form-group">
+                    <label for="current_stage">Send To:</label>
+                    <select name="current_stage" id="id_current_stage" class="form-select" required>
+                        <option value="">--Select--</option>
+                        {% for dpt in departments %}
+                        <option value="{{dpt.id}}">{{dpt}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div> -->
+            <div class="field">
+                <input type="submit" class="submit-field" value="Send">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

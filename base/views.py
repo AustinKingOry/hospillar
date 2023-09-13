@@ -3,9 +3,9 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required,user_passes_test,permission_required
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.models import Group, Permission
-from .forms import PatientForm,MyUserCreationForm,PatientLogForm,NursePatientLogForm,PrescriptionForm,ServiceLogForm,CashPatientLogForm,DebitPayLogForm,DebitPayLogFormInv,PharPatientLogForm,PharNewDrugForm,PharDrugAdjustForm,StockTakeForm,LabPatientLogForm,EmployeeForm,EmployeeEvaluationForm,EmployeeAttendanceForm,EmployeeCheckoutForm,EmployeeLeaveApprovalForm,EmployeeLeaveApplicationForm,PayrollForm,PayrollApprovalForm,DepartmentForm,FacilityForm,FinancialAccountForm,PaymentModeForm,CreditorForm,EmergencyCodeForm,CashOptionForm,ServiceForm,DeleteForm,LeaveStatusForm,LeaveTypeForm,ImagingPatientLogForm,SupplierForm,DentalPatientLogForm,AddUsersToGroupForm,UserUpdateForm,ChangePwdForm,ForgotPwdForm,AppointmentForm,AppointmentChangeForm,ExpenseForm,ExpenseCategoryForm
+from .forms import PatientForm,MyUserCreationForm,PatientLogForm,NursePatientLogForm,PrescriptionForm,ServiceLogForm,CashPatientLogForm,DebitPayLogForm,DebitPayLogFormInv,PharPatientLogForm,PharNewDrugForm,PharDrugAdjustForm,StockTakeForm,LabPatientLogForm,EmployeeForm,EmployeeEvaluationForm,EmployeeAttendanceForm,EmployeeCheckoutForm,EmployeeLeaveApprovalForm,EmployeeLeaveApplicationForm,PayrollForm,PayrollApprovalForm,DepartmentForm,FacilityForm,FinancialAccountForm,PaymentModeForm,CreditorForm,EmergencyCodeForm,CashOptionForm,ServiceForm,DeleteForm,LeaveStatusForm,LeaveTypeForm,ImagingPatientLogForm,SupplierForm,DentalPatientLogForm,AddUsersToGroupForm,UserUpdateForm,ChangePwdForm,ForgotPwdForm,AppointmentForm,AppointmentChangeForm,ExpenseForm,ExpenseCategoryForm,WardForm,InpatientForm
 
-from .models import User,Department,Patient,PatientLog,PaymentMode,Service,ServiceLog,Drug,PayerScheme,Prescription,DebitPaymentLog,DrugStockTake,EmergencyCode,Facility,LabLog,Employee,EmployeeEvaluation,AttendanceLog,EmployeeLeave,LeaveStatus,LeaveType,Payroll,CashOption,FinancialAccount,ImagingLog,Supplier,DentalLog,Appointment,ExpenseCategory,Expense
+from .models import User,Department,Patient,PatientLog,PaymentMode,Service,ServiceLog,Drug,PayerScheme,Prescription,DebitPaymentLog,DrugStockTake,EmergencyCode,Facility,LabLog,Employee,EmployeeEvaluation,AttendanceLog,EmployeeLeave,LeaveStatus,LeaveType,Payroll,CashOption,FinancialAccount,ImagingLog,Supplier,DentalLog,Appointment,ExpenseCategory,Expense,Ward,Inpatient
 from .functions import createId,createPrescription,createServiceLog,createOp,create_groups,is_admin,user_perms,has_custom_permissions,daily_departmental_income,daily_pharmacy_income
 from django.contrib import messages
 from django.db.models import Q
@@ -19,7 +19,7 @@ def home(request):
     dpt_collections = {}
     total_collection = 0
     current_date = timezone.localdate()
-    today_services = ServiceLog.objects.filter(created__date = current_date)
+    today_services = ServiceLog.objects.filter(created__date = current_date)[0:15]
     patient_files = PatientLog.objects.filter(created__date=current_date)[0:20]
     all_appointments = Appointment.objects.filter(cleared=False,appointment_date=current_date).order_by('name')
     expenses = Expense.objects.filter(created__date=current_date)
@@ -298,12 +298,15 @@ def rec_new_patient(request):
     if request.method == 'POST':
         form = PatientForm(request.POST)
         if form.is_valid():
-            messages.success(request,'Registration was a success!')
             patient = form.save(commit=False)
             patient.visit_number = 1
             patient.patId = str(createId(Patient,Patient.patId,'PAT'))
-            patient.op_number = str(createOp(Patient,Patient.op_number,'GOP'))
+            if request.POST.get('admission_category').lower()=='outpatient':
+                patient.op_number = str(createOp(Patient,Patient.op_number,'GOP'))
+            else:
+                patient.op_number = str(createOp(Patient,Patient.op_number,'GIP'))
             patient.save()
+            messages.success(request,'Registration was a success!')
             
             formForwardDpt = request.POST.get('forward-to-dpt')
             if Department.objects.filter(id=formForwardDpt).exists():
@@ -326,12 +329,20 @@ def rec_new_patient(request):
                 doctor = assigned_user,
                 payment_mode = paymode,
                 current_stage = forwarded_dpt,
+                admission_category = form.cleaned_data['admission_category'],
                 emergency_code = emcCode,
                 active_status = True,
             )
             initialService = createServiceLog(pat_log.id,request.user.id,request.POST.get('service'))
             pat_log.inclusive_service.add(initialService)
             pat_log.involved_depts.add(forwarded_dpt)
+            
+            if request.POST.get('admission_category').lower()=='inpatient':
+                inpt_file=Inpatient.objects.create(
+                    rec_id = str(createId(Inpatient,Inpatient.rec_id,'PAT')),
+                    patient_file = pat_log,
+                    condition = '',
+                )
             return redirect('reception')
         else:
             for field, errors in form.errors.items():
@@ -424,12 +435,19 @@ def rec_show_patient(request,pk):
                 doctor = assigned_user,
                 payment_mode = paymode,
                 current_stage = forwarded_dpt,
+                admission_category = form.cleaned_data['admission_category'],
                 emergency_code = emcCode,
                 active_status = True,
             )
             initialService = createServiceLog(pat_log.id,request.user.id,request.POST.get('service'))
             pat_log.inclusive_service.add(initialService)
             pat_log.involved_depts.add(forwarded_dpt)
+            if request.POST.get('admission_category').lower()=='inpatient':
+                inpt_file=Inpatient.objects.create(
+                    rec_id = str(createId(Inpatient,Inpatient.rec_id,'PAT')),
+                    patient_file = pat_log,
+                    condition = '',
+                )
             return redirect('reception')
         else:
             for field, errors in form.errors.items():
@@ -570,6 +588,7 @@ def patientInvoice(request,pk):
     patientLogFile = paymentLogFile.pat_log
     services = patientLogFile.inclusive_service.all()
     prescriptions = patientLogFile.prescription.all()
+    facility = Facility.objects.all()[0]
     # totalservices=(prescriptions.count()) + services.count()
     allItems = []
     for p in prescriptions:
@@ -583,7 +602,7 @@ def patientInvoice(request,pk):
         cumulative_totals.append(t)
     # totalservices=(prescriptions.count()) + services.count()
     page_title = 'Invoice for '+patientLogFile.patient.full_name()
-    context = {'page_title':page_title,'paymentlog':paymentLogFile,'allItems':allItems,'hide_skeleton':True,'cumulative_totals':cumulative_totals,'cur_date':datetime.date.today()}
+    context = {'page_title':page_title,'paymentlog':paymentLogFile,'allItems':allItems,'hide_skeleton':True,'cumulative_totals':cumulative_totals,'cur_date':datetime.date.today(),'facility':facility}
     return render(request,'base/cashier/invoice-print.html',context)
 
 @login_required(login_url="login")
@@ -678,6 +697,18 @@ def medUncompleted(request):
     page_title = 'Med Uncompleted'
     context = {'page_title':page_title,'patientlogs':patientLogFiles}
     return render(request,'base/med/uncompleted.html',context)
+
+@login_required(login_url="login")
+@permission_required(user_perms('doctor'),login_url='no-permission')
+def medInpatients(request):
+    if Department.objects.filter(role='consultation').exists():
+        docDptid = Department.objects.get(role='consultation').id
+    inpatientlogs = []
+    for patlog in Inpatient.objects.filter(patient_file__active_status=True,patient_file__admission_category='INPATIENT'):
+        inpatientlogs.append(patlog)
+    page_title = 'Med Inpatients'
+    context = {'page_title':page_title,'inpatientlogs':inpatientlogs}
+    return render(request,'base/med/inpatients.html',context)
 
 @login_required(login_url="login")
 @permission_required(user_perms('doctor'),login_url='no-permission')
@@ -828,6 +859,16 @@ def nurseUncompleted(request):
 
 @login_required(login_url="login")
 @permission_required(user_perms('nurse'),login_url='no-permission')
+def nurseInpatients(request):
+    patientLogFiles = []
+    for patlog in Inpatient.objects.filter(patient_file__active_status=True,patient_file__admission_category='INPATIENT'):
+        patientLogFiles.append(patlog)
+    page_title = 'Nurse | Inpatients'
+    context = {'page_title':page_title,'inpatientlogs':patientLogFiles}
+    return render(request,'base/nurse/inpatients.html',context)
+
+@login_required(login_url="login")
+@permission_required(user_perms('nurse'),login_url='no-permission')
 def nursePatientFile(request,pk):
     departments = Department.objects.filter(handles_patient=True)
     services = Service.objects.all()
@@ -847,7 +888,30 @@ def nursePatientFile(request,pk):
                     messages.error(request, f"Error in {field}: {error}")
     page_title = 'Nurse | View Patient File'
     context = {'page_title':page_title,'form':form,'patientlog':patientLogFile,'services':services,'departments':departments}
-    return render(request,'base/nurse/patient-file.html',context)
+    return render(request,'base/nurse/patient-file.html',context)\
+        
+@login_required(login_url="login")
+@permission_required(user_perms('nurse'),login_url='no-permission')
+def nurseInpatientFile(request,pk):
+    departments = Department.objects.filter(handles_patient=True)
+    services = Service.objects.all()
+    inpatientFile = Inpatient.objects.get(id=pk)
+    form = InpatientForm(instance=inpatientFile)
+    if(request.method == 'POST'):
+        form = InpatientForm(request.POST,instance=inpatientFile)
+        if form.is_valid():
+            logfile=form.save(commit=False)
+            logfile.save()
+            # logfile.involved_depts.add(request.POST.get('current_stage'))
+            messages.success(request,'Patient data saved successfully!')
+            return redirect('nurse-inpatients')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
+    page_title = 'Nurse | View Patient File'
+    context = {'page_title':page_title,'form':form,'inpatientFile':inpatientFile,'services':services,'departments':departments}
+    return render(request,'base/nurse/inpatient-file.html',context)
 #end of nurse
 # pharmacy and its related files
 @login_required(login_url="login")
@@ -1930,6 +1994,25 @@ def settingsListingFinancialAccounts(request):
 
 @login_required(login_url="login")
 @user_passes_test(is_admin,login_url="login")
+def settingsListingWards(request):
+    all_objs = Ward.objects.all()
+    records_list=[] 
+    for s in all_objs:
+        sub=[]
+        sub.append(s.id)
+        sub.append(s.name)
+        sub.append(s.category)
+        sub.append(s.bed_count)
+        sub.append(s.description)
+        records_list.append(sub)
+    page_title = 'Edit Ward Details'
+    keyword = 'ward'
+    fields = {'#':'id','Name':'name','Category':'category','beds':'bed_count','Description':'description'}
+    context = {'page_title':page_title,'records_list':records_list,'keyword':keyword,'fields':fields}
+    return render(request,'base/hosp-settings/settings-listings.html',context)
+
+@login_required(login_url="login")
+@user_passes_test(is_admin,login_url="login")
 def settingsListingEmergencyCodes(request):
     all_objs = EmergencyCode.objects.all()
     records_list=[] 
@@ -2028,6 +2111,12 @@ def settingsEdit(request,table,pk):
         form_inst = SupplierForm
         keyword = t
         after_submit = 'admin-settings-suppliers'
+    elif t=='ward':
+        obj = Ward.objects.get(id=pk)
+        form = WardForm(instance=obj)
+        form_inst = WardForm
+        keyword = t
+        after_submit = 'admin-settings-wards'
     else:
         return HttpResponse('Check your request and try again')
     
@@ -2126,6 +2215,12 @@ def settingsAdd(request,table):
         form_inst = SupplierForm
         keyword = t
         after_submit = 'admin-settings-suppliers'
+    elif t=='ward':
+        obj = Ward
+        form = WardForm()
+        form_inst = WardForm
+        keyword = t
+        after_submit = 'admin-settings-wards'
     else:
         return HttpResponse('Check your request and try again')
     
@@ -2205,6 +2300,10 @@ def settingsDelete(request,table,pk):
         obj = Supplier.objects.get(id=pk)
         keyword = t
         after_submit = 'admin-settings-suppliers'
+    elif t=='ward':
+        obj = Ward.objects.get(id=pk)
+        keyword = t
+        after_submit = 'admin-settings-wards'
     else:
         return HttpResponse('Check your request and try again')
     

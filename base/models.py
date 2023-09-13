@@ -613,4 +613,39 @@ class Expense(models.Model):
         return self.purpose
     
     def field_id(self):
+        return self.rec_id   
+     
+class Ward(models.Model):
+    cat_1 = 'VIP'
+    cat_2 = 'Regular'
+    cat_choices = [
+        (cat_1,'VIP'),
+        (cat_2,'Regular'),
+    ]
+    rec_id = models.CharField(max_length=10,unique=True)
+    name = models.CharField(max_length=100)
+    bed_count = models.IntegerField(default=0)
+    category = models.CharField(max_length=100,choices=cat_choices,default = cat_2)
+    description = models.TextField()
+    available = models.BooleanField(default = False)
+    added_by = models.ForeignKey(User,on_delete=models.DO_NOTHING,null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+    
+    def field_id(self):
+        return self.rec_id
+
+class Inpatient(models.Model):
+    rec_id = models.CharField(max_length=10,unique=True)
+    patient_file = models.ForeignKey(PatientLog, on_delete=models.CASCADE)
+    discharge_date = models.DateField(null=True, blank=True)
+    room_number = models.ForeignKey(Ward, on_delete=models.CASCADE,null=True)
+    condition = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.patient_file.patient.full_name()
+    def field_id(self):
         return self.rec_id

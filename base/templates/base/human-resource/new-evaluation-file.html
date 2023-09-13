@@ -17,7 +17,7 @@
             </div>
             <div class="form-group">
                 <label for="id_attendance_logs">Attendance logs:</label>
-                <select name="attendance_logs" id="id_attendance_logs" multiple class="form-control">
+                <select name="attendance_logs" id="id_attendance_logs" multiple class="form-control select2bs4">
                     {% for emp in form.attendance_logs %}
                     {{emp}}
                     {% endfor %}
@@ -25,7 +25,7 @@
             </div>
             <div class="form-group">
                 <label for="id_leaves_taken">Leaves taken:</label>
-                <select name="leaves_taken" id="id_leaves_taken" multiple class="form-control">
+                <select name="leaves_taken" id="id_leaves_taken" multiple class="form-control select2bs4">
                     {% for emp in form.leaves_taken %}
                     {{emp}}
                     {% endfor %}

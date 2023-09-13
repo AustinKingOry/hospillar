@@ -59,6 +59,7 @@ urlpatterns = [
     path('med/patient/del-ser/<str:pk>/',views.delService,name='del-ser'),
     path('med/patient/service/<str:pk>/',views.medEditServices,name='edit-services'),
     path('med/med-completed',views.medCompleted,name='med-completed'),
+    path('med/med-inpatients',views.medInpatients,name='med-inpatients'),
     
     path('pharmacy',views.pharmacy,name='pharmacy'),
     path('pharmacy/pharmacy-uncompleted',views.pharmacyUncompleted,name='pharmacy-uncompleted'),
@@ -73,7 +74,9 @@ urlpatterns = [
         
     path('nurse',views.nurse,name='nurse'),
     path('nurse/unattended',views.nurseUncompleted,name='nurse-unattended'),
+    path('nurse/inpatients',views.nurseInpatients,name='nurse-inpatients'),
     path('nurse/patient-file/<str:pk>/',views.nursePatientFile,name='nurse-patient-file'),
+    path('nurse/inpatient-file/<str:pk>/',views.nurseInpatientFile,name='nurse-inpatient-file'),
     
     path('investigations',views.investigations,name='investigations'),
     path('investigations/completed',views.investigationsCompleted,name='investigations-completed'),
@@ -111,6 +114,7 @@ urlpatterns = [
     path('hosp-admin/settings/emergency-codes',views.settingsListingEmergencyCodes,name='admin-settings-emergency-codes'),
     path('hosp-admin/settings/leave-statuses',views.settingsListingLeaveStatuses,name='admin-settings-leave-statuses'),
     path('hosp-admin/settings/leave-types',views.settingsListingLeaveTypes,name='admin-settings-leave-types'),
+    path('hosp-admin/settings/wards',views.settingsListingWards,name='admin-settings-wards'),
     path('hosp-admin/settings/groups',views.group_permissions_view,name='admin-settings-groups'),
     path('hosp-admin/settings/edit-group-permissions/<str:pk>/', views.edit_group_permissions, name='edit-group-permissions'),
     path('hosp-admin/settings/create-group/', views.create_group, name='create-group'),

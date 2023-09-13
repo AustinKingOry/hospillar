@@ -1,0 +1,49 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+{% load custom_tags %}
+
+<div class="main-body">
+    <div class="record-listing-wrapper">
+        <div class="header-sect">
+            <h3>Nurse | Inpatients Registry</h3>
+        </div>
+        <div class="listing-cont">
+            {% if inpatientlogs|length > 0 %}
+            <table id="main-table" class="listing-data-cont table table-bordered table-striped">
+                <thead>
+                    <tr class="info-title-wrapper">
+                        <th class="columnHeader sort-control bi-sort-up"> Num</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Name</th>
+                        <th class="columnHeader sort-control bi-sort-up"> File Number</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Payer</th>
+                        <th class="columnHeader sort-control bi-sort-up"> Ward</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pat in inpatientlogs %}
+                    <tr class="row-items-wrapper">
+                        <td class="row-item">{{forloop.counter}}</td>
+                        <td class="row-item">{{pat}}</td>
+                        <td class="row-item">{{pat.patient_file.patlog_id}}</td>
+                        <td class="row-item">{{pat.patient_file.patient.payment_mode}}</td>
+                        <td class="row-item">{{pat.room_number}}</td>
+                        <td class="row-item"><center><a href="{% url 'nurse-patient-file' pat.patient_file.id %}">Open File</a></center></td>
+                        <td class="row-item"><center><a href="{% url 'nurse-inpatient-file' pat.id %}" class="bi-pencil-square"></a></center></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>                
+            </table> 
+            {% else %}
+            <div class="empty-container">
+                <span>There are no patient records yet.</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% include 'table-scripts.html' %}
+{% endblock content %}

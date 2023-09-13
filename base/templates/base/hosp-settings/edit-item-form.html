@@ -35,14 +35,14 @@
                         </div>
                         <div class="card-footer">
                             <div class="form-group float-right">
-                                <input type="submit" value="Save {{keyword|as_words}}" class="btn btn-block btn-primary py-3">
+                                <input type="submit" value="Save {{keyword|as_words}}" class="btn btn-block btn-primary">
                             </div>
                         </form>
                             {% if obj is not None and deletable %}
                             <form id="deleteForm" action="{% url 'admin-settings-delete' keyword obj.id %}" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" name="confirm_deletion" value="true">
-                                <button type="button" class="btn btn-danger py-3 px-4" id="deleteButton">Delete</button>
+                                <button type="button" class="btn btn-danger btn-md" id="deleteButton">Delete</button>
                             </form>
                             {% endif %}
                         </div>
@@ -62,7 +62,7 @@ const swalWithBootstrapButtons = Swal.mixin({
 		  confirmButton: 'btn btn-success',
 		  cancelButton: 'btn btn-danger'
 		},
-		buttonsStyling: false
+		buttonsStyling: true
 	  });
 deleteButton.addEventListener('click', () => {
   event.preventDefault(); // Prevent the default form submission
@@ -90,7 +90,7 @@ deleteButton.addEventListener('click', () => {
     ) {
       swalWithBootstrapButtons.fire(
         'Cancelled',
-        'Your imaginary file is safe :)',
+        'You have cancelled deletion of this record.',
         'error'
       );
     }

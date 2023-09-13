@@ -136,6 +136,12 @@
                                 <p>Unattended Patients</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{% url 'nurse-inpatients' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Inpatients</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item {% if request.META.PATH_INFO|parent_path_name == 'med'|lower %}active{% endif %}">
@@ -160,6 +166,12 @@
                             <a href="{% url 'med-completed' %}" class="nav-link">
                                 <i class="nav-icon far fa-circle"></i>
                                 <p>Completed Patients</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'med-inpatients' %}" class="nav-link">
+                                <i class="nav-icon far fa-circle"></i>
+                                <p>Inpatients</p>
                             </a>
                         </li>
                     </ul>
@@ -308,12 +320,6 @@
                             <a href="{% url 'hr-payroll' %}" class="nav-link">
                                 <i class="nav-icon far fa-circle"></i>
                                 <p>Payroll</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'hr' %}" class="nav-link">
-                                <i class="nav-icon far fa-circle"></i>
-                                <p>Reports</p>
                             </a>
                         </li>
                     </ul>

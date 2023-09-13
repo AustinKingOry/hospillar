@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User,Patient,PatientLog,PaymentMode,Prescription,Department,Drug,Service,LabLog,PayerScheme,ServiceLog,DebitPaymentLog,CashOption,DrugStockTake,Facility,EmergencyCode,Employee,LeaveStatus,LeaveType,EmployeeLeave,AttendanceLog,EmployeeEvaluation,FinancialAccount,Payroll,ImagingLog,Supplier,DentalLog,Appointment,ExpenseCategory,Expense
+from .models import User,Patient,PatientLog,PaymentMode,Prescription,Department,Drug,Service,LabLog,PayerScheme,ServiceLog,DebitPaymentLog,CashOption,DrugStockTake,Facility,EmergencyCode,Employee,LeaveStatus,LeaveType,EmployeeLeave,AttendanceLog,EmployeeEvaluation,FinancialAccount,Payroll,ImagingLog,Supplier,DentalLog,Appointment,ExpenseCategory,Expense,Inpatient,Ward
 # Register your models here.
 
 admin.site.register(User)
@@ -32,3 +32,5 @@ admin.site.register(DentalLog)
 admin.site.register(Appointment)
 admin.site.register(Expense)
 admin.site.register(ExpenseCategory)
+admin.site.register(Inpatient)
+admin.site.register(Ward)

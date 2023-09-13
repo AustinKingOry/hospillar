@@ -1,7 +1,5 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad, unpad
 from base64 import b64encode, b64decode
 from .models import Prescription,Patient,User,Drug,PatientLog,Service,ServiceLog,EmergencyCode,Facility,Department,DrugStockTake,PaymentMode,PayerScheme,ServiceAndPrescriptionLog,LabLog,ImagingLog,DentalLog,CashOption,DebitPaymentLog,Employee,LeaveStatus,LeaveType,EmployeeLeave,AttendanceLog,EmployeeEvaluation,FinancialAccount,Payroll,Supplier
 from django.contrib import messages
@@ -11,19 +9,19 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 
-def encrypt_text(key, text):
-    cipher = AES.new(key, AES.MODE_ECB)
-    padded_text = pad(text.encode('utf-8'), AES.block_size)
-    encrypted_bytes = cipher.encrypt(padded_text)
-    encrypted_text = b64encode(encrypted_bytes).decode('utf-8')
-    return encrypted_text
+# def encrypt_text(key, text):
+#     cipher = AES.new(key, AES.MODE_ECB)
+#     padded_text = pad(text.encode('utf-8'), AES.block_size)
+#     encrypted_bytes = cipher.encrypt(padded_text)
+#     encrypted_text = b64encode(encrypted_bytes).decode('utf-8')
+#     return encrypted_text
 
-def decrypt_text(key, encrypted_text):
-    cipher = AES.new(key, AES.MODE_ECB)
-    encrypted_bytes = b64decode(encrypted_text)
-    decrypted_bytes = cipher.decrypt(encrypted_bytes)
-    decrypted_text = unpad(decrypted_bytes, AES.block_size).decode('utf-8')
-    return decrypted_text
+# def decrypt_text(key, encrypted_text):
+#     cipher = AES.new(key, AES.MODE_ECB)
+#     encrypted_bytes = b64decode(encrypted_text)
+#     decrypted_bytes = cipher.decrypt(encrypted_bytes)
+#     decrypted_text = unpad(decrypted_bytes, AES.block_size).decode('utf-8')
+#     return decrypted_text
 
 def RemovePrefix(index,prefix):
     s=str(index)
