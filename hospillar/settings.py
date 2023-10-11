@@ -129,12 +129,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = '/static/'
-MEDIA_URL = '/img/'
+MEDIA_URL = '/media/'
 # commented out for whitenoise
 # STATICFILES_DIRS = [
 #     BASE_DIR / 'static',
 # ]
-MEDIA_ROOT = BASE_DIR / 'static/img'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # added for whitenoise
 STATIC_ROOT = BASE_DIR / 'static'
