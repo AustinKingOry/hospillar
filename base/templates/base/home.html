@@ -125,8 +125,8 @@ table tbody{
 				</div>				
 			</div>
 			<div class="card-body">
-				<!-- Display installation status and progress updates -->
-				<canvas id="dptIncomeChart" width="400" height="200" keys="{% for k,v in dpt_collections.items %}{{k}}{% if not forloop.last %},{% endif %}{% endfor %}" values="{% for k,v in dpt_collections.items %}{{v}}{% if not forloop.last %},{% endif %}{% endfor %}"></canvas>
+				<!-- Display Daily Departmental Sales -->
+				<canvas id="dptIncomeChart" width="400" height="200" keys="{% for k,v in daily_dpt_income.items %}{{k}}{% if not forloop.last %},{% endif %}{% endfor %}" op_values="{% for k,v in daily_dpt_income.items %}{{v|get_list_item:1}}{% if not forloop.last %},{% endif %}{% endfor %}" ip_values="{% for k,v in daily_dpt_income.items %}{{v|get_list_item:0}}{% if not forloop.last %},{% endif %}{% endfor %}"></canvas>
 			</div>
 		</div>
         <div class="card card-primary card-outline">
@@ -353,9 +353,11 @@ table tbody{
     // Example data for payment trends
 	const dptIncomeChartCanvas = document.getElementById('dptIncomeChart');
 	var dpt_keys = dptIncomeChartCanvas.getAttribute('keys');
-	var dpt_values = dptIncomeChartCanvas.getAttribute('values');
+	var op_dpt_values = dptIncomeChartCanvas.getAttribute('op_values');
+	var ip_dpt_values = dptIncomeChartCanvas.getAttribute('ip_values');
 	var keysArr = dpt_keys.split(',');
-	var valuesArr = dpt_values.split(',');
+	var opValuesArr = op_dpt_values.split(',');
+	var ipValuesArr = ip_dpt_values.split(',');
 	const dptIncomeData = {
 	labels: keysArr,
 	datasets: [
@@ -364,15 +366,15 @@ table tbody{
 		backgroundColor: 'rgba(40, 67, 169, 0.5)',
 		borderColor: 'rgba(40, 67, 169, 1)',
 		borderWidth: 1,
-		data: valuesArr,
+		data: opValuesArr,
 		},
-		// {
-		// label: 'Inpatient Income',
-		// backgroundColor: 'rgba(40, 167, 69, 0.5)', // Green with opacity
-		// borderColor: 'rgba(40, 167, 69, 1)', // Solid green
-		// borderWidth: 1,
-		// data: [0, 500,2000,3000,2500,3500,3000],
-		// },
+		{
+		label: 'Inpatient Income',
+		backgroundColor: 'rgba(167, 40, 69, 0.5)', // Green with opacity
+		borderColor: 'rgba(167, 40, 69, 1)', // Solid green
+		borderWidth: 1,
+		data: ipValuesArr,
+		},
 	],
 	};
 

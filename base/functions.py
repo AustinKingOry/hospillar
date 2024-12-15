@@ -274,3 +274,102 @@ def daily_pharmacy_income():
     for p in prescriptions:
         pharmacy_amount+=p.total_amount
     return pharmacy_amount
+
+def daily_inpatient_by_dpt():
+    current_date=timezone.localdate()
+    departments_list={}
+    service_logs = []
+    prescriptions = []
+    pharmacy_amount = 0
+    all_records = DebitPaymentLog.objects.filter(created__date=current_date)
+    departments = Department.objects.filter(handles_patient=True)
+    for rec in all_records:
+        for s in ServiceLog.objects.filter(patient_log=rec.pat_log):
+            service_logs.append(s)
+        for p in Prescription.objects.filter(patlog=rec.pat_log):
+            prescriptions.append(p)
+    #geting total service and procedure income from departments
+    for s in service_logs:
+        for dpt in departments:
+            if s.service.department == dpt:
+                if not str(s.service.department) in departments_list:
+                    if (s.patient.admission_category).lower()!='outpatient':
+                        departments_list[str(s.service.department)]=s.total_amount
+                else:
+                    if (s.patient.admission_category).lower()!='outpatient':
+                        departments_list[str(s.service.department)]+=s.total_amount
+    #geting total from drugs income
+    for p in prescriptions:
+        if (p.patient.admission_category).lower()!='outpatient':
+            pharmacy_amount+=p.total_amount
+    departments_list['Pharmacy']=pharmacy_amount
+    return departments_list
+
+def daily_outpatient_by_dpt():
+    current_date=timezone.localdate()
+    departments_list={}
+    service_logs = []
+    prescriptions = []
+    pharmacy_amount = 0
+    all_records = DebitPaymentLog.objects.filter(created__date=current_date)
+    departments = Department.objects.filter(handles_patient=True)
+    for rec in all_records:
+        for s in ServiceLog.objects.filter(patient_log=rec.pat_log):
+            service_logs.append(s)
+        for p in Prescription.objects.filter(patlog=rec.pat_log):
+            prescriptions.append(p)
+    #geting total service and procedure income from departments
+    for s in service_logs:
+        for dpt in departments:
+            if s.service.department == dpt:
+                if not str(s.service.department) in departments_list:
+                    if str(s.patient.admission_category).lower() == 'outpatient':
+                        departments_list[str(s.service.department)]=s.total_amount
+                else:
+                    if str(s.patient.admission_category).lower() == 'outpatient':
+                        departments_list[str(s.service.department)]+=s.total_amount
+    #geting total from drugs income
+    for p in prescriptions:
+        if (p.patient.admission_category).lower()=='outpatient':
+            pharmacy_amount+=p.total_amount
+    departments_list['Pharmacy']=pharmacy_amount
+    return departments_list
+
+def daily_income_by_dpt():
+    try:
+        current_date=timezone.localdate()
+        departments_list={} #{'department':[outpatient,inpatient]}
+        service_logs = []
+        prescriptions = []
+        pharmacy_amount = [0,0]
+        all_records = DebitPaymentLog.objects.filter(created__date=current_date)
+        departments = Department.objects.filter(handles_patient=True)
+        for rec in all_records:
+            for s in ServiceLog.objects.filter(patient_log=rec.pat_log):
+                service_logs.append(s)
+            for p in Prescription.objects.filter(patlog=rec.pat_log):
+                prescriptions.append(p)
+        #geting total service and procedure income from departments
+        for s in service_logs:
+            for dpt in departments:
+                if s.service.department == dpt:
+                    if not str(s.service.department) in departments_list:
+                        if str(s.patient.admission_category).lower() == 'outpatient':
+                            departments_list[str(s.service.department)]=[s.total_amount,0]
+                        elif str(s.patient.admission_category).lower() != 'outpatient':
+                            departments_list[str(s.service.department)]=[0,s.total_amount]
+                    else:
+                        if str(s.patient.admission_category).lower() == 'outpatient':
+                            departments_list[str(s.service.department)][0]+=s.total_amount
+                        elif str(s.patient.admission_category).lower() != 'outpatient':
+                            departments_list[str(s.service.department)][1]+=s.total_amount
+        #geting total from drugs income
+        for p in prescriptions:
+            if str(p.patient.admission_category).lower()=='outpatient':
+                pharmacy_amount[0]+=p.total_amount
+            else:
+                pharmacy_amount[1]+=p.total_amount
+        departments_list['Pharmacy']=pharmacy_amount
+        return departments_list
+    except Exception as e:
+        print(f'Could not get daily income by department: {e}')

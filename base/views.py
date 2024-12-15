@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group, Permission
 from .forms import PatientForm,MyUserCreationForm,PatientLogForm,NursePatientLogForm,PrescriptionForm,ServiceLogForm,CashPatientLogForm,DebitPayLogForm,DebitPayLogFormInv,PharPatientLogForm,PharNewDrugForm,PharDrugAdjustForm,StockTakeForm,LabPatientLogForm,EmployeeForm,EmployeeEvaluationForm,EmployeeAttendanceForm,EmployeeCheckoutForm,EmployeeLeaveApprovalForm,EmployeeLeaveApplicationForm,PayrollForm,PayrollApprovalForm,DepartmentForm,FacilityForm,FinancialAccountForm,PaymentModeForm,CreditorForm,EmergencyCodeForm,CashOptionForm,ServiceForm,DeleteForm,LeaveStatusForm,LeaveTypeForm,ImagingPatientLogForm,SupplierForm,DentalPatientLogForm,AddUsersToGroupForm,UserUpdateForm,ChangePwdForm,ForgotPwdForm,AppointmentForm,AppointmentChangeForm,ExpenseForm,ExpenseCategoryForm,WardForm,InpatientForm
 
 from .models import User,Department,Patient,PatientLog,PaymentMode,Service,ServiceLog,Drug,PayerScheme,Prescription,DebitPaymentLog,DrugStockTake,EmergencyCode,Facility,LabLog,Employee,EmployeeEvaluation,AttendanceLog,EmployeeLeave,LeaveStatus,LeaveType,Payroll,CashOption,FinancialAccount,ImagingLog,Supplier,DentalLog,Appointment,ExpenseCategory,Expense,Ward,Inpatient
-from .functions import createId,createPrescription,createServiceLog,createOp,create_groups,is_admin,user_perms,has_custom_permissions,daily_departmental_income,daily_pharmacy_income
+from .functions import createId,createPrescription,createServiceLog,createOp,create_groups,is_admin,user_perms,has_custom_permissions,daily_departmental_income,daily_pharmacy_income,daily_inpatient_by_dpt,daily_outpatient_by_dpt,daily_income_by_dpt
 from django.contrib import messages
 from django.db.models import Q
 from django.utils import timezone
@@ -43,7 +43,7 @@ def home(request):
             else:
                 dpt_collections[str(dpt.role)]=daily_pharmacy_income()
     page_title = 'Dashboard'
-    context = {'page_title':page_title,'total_expenses':total_expenses,'patient_files':patient_files,'today_services':today_services,'collections':collections,'dpt_collections':dpt_collections,'total_collection':total_collection,'appointments':all_appointments}
+    context = {'page_title':page_title,'total_expenses':total_expenses,'patient_files':patient_files,'today_services':today_services,'collections':collections,'dpt_collections':dpt_collections,'total_collection':total_collection,'appointments':all_appointments,'daily_dpt_income':daily_income_by_dpt()}
     return render(request,'base/home.html',context)
 
 def no_permission(request):
