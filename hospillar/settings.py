@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,13 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4=qgl-uv5$l(t21cn6cs3&iy72pdzx(2_55!++0(zakw5no_)+'
+# SECRET_KEY = 'django-insecure-4=qgl-uv5$l(t21cn6cs3&iy72pdzx(2_55!++0(zakw5no_)+'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['127.0.0.1','.railway.app']
-CSRF_TRUSTED_ORIGINS = ['https://web-production-4004d.up.railway.app']
+ALLOWED_HOSTS = ['127.0.0.1','.railway.app','.onrender.com']
+CSRF_TRUSTED_ORIGINS = ['https://web-production-4004d.up.railway.app','https://hospillar-ruae.onrender.com','https://hospillar.com','https://13.53.177.183','http://13.53.177.183']
 
 
 # Application definition
@@ -93,6 +96,9 @@ DATABASES = {
     }
 }
 
+if not DEBUG:
+    database_url=config('DATABASE_URL')
+    DATABASES["default"]=dj_database_url.parse(database_url)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
